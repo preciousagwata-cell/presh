@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PRESH HAIRS — Collections</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --coffee: #3B1F0E;
+    --coffee-mid: #6B3A20;
+    --coffee-light: #A0623A;
+    --ivory: #F5EFE6;
+    --cream: #EDE4D5;
+    --gold: #C9A84C;
+    --gold-light: #E2C47A;
+    --dark: #1A0E07;
+    --text-dark: #2C1A0E;
+    --text-mid: #5C3D25;
+    --white: #FDFAF6;
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { font-family: 'Montserrat', sans-serif; background: var(--ivory); color: var(--text-dark); overflow-x: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 1.4rem 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(250,246,240,0.95);
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 30px rgba(59,31,14,0.08);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.7rem; font-weight: 600; letter-spacing: 0.18em;
+    color: var(--coffee); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.4rem; list-style: none; }
+  .nav-links a {
+    font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-mid); text-decoration: none; position: relative; padding-bottom: 3px;
+    transition: color 0.3s;
+  }
+  .nav-links a::after {
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 0; height: 1px; background: var(--gold); transition: width 0.3s;
+  }
+  .nav-links a:hover { color: var(--coffee); }
+  .nav-links a:hover::after { width: 100%; }
+  .nav-back {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--coffee-light); text-decoration: none;
+    padding: 0.65rem 1.4rem; border: 1px solid rgba(59,31,14,0.2);
+    transition: all 0.3s;
+  }
+  .nav-back:hover { background: var(--coffee); color: var(--ivory); border-color: var(--coffee); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+  .hamburger span { width: 24px; height: 1.5px; background: var(--coffee); }
+
+  /* ── COLLECTION HERO ── */
+  .collection-hero {
+    margin-top: 72px;
+    position: relative; height: 380px;
+    display: flex; align-items: flex-end;
+    overflow: hidden;
+  }
+  .collection-hero-bg {
+    position: absolute; inset: 0;
+    background-size: cover; background-position: center;
+    transition: background-image 0.5s;
+    filter: brightness(0.35);
+  }
+  .collection-hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 30%, rgba(26,14,7,0.9) 100%);
+  }
+  .collection-hero-content {
+    position: relative; z-index: 2;
+    padding: 3rem 5% 3.5rem;
+    width: 100%;
+  }
+  .breadcrumb {
+    display: flex; align-items: center; gap: 0.6rem;
+    font-size: 0.58rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(245,239,230,0.5); margin-bottom: 1rem;
+  }
+  .breadcrumb a { color: var(--gold); text-decoration: none; }
+  .breadcrumb span { color: rgba(245,239,230,0.3); }
+  .collection-hero-content h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 300;
+    color: var(--white); line-height: 1.05; margin-bottom: 0.8rem;
+  }
+  .collection-hero-content h1 em { font-style: italic; color: var(--gold-light); }
+  .collection-hero-content p {
+    font-size: 0.75rem; color: rgba(245,239,230,0.6);
+    letter-spacing: 0.15em; text-transform: uppercase; max-width: 500px;
+  }
+  .hero-stats {
+    display: flex; gap: 3rem; margin-top: 1.8rem;
+  }
+  .hero-stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.6rem; color: var(--gold); font-weight: 400;
+  }
+  .hero-stat-label {
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: rgba(245,239,230,0.4);
+  }
+
+  /* ── COLLECTION TABS ── */
+  .collection-tabs-bar {
+    background: var(--white);
+    border-bottom: 1px solid rgba(59,31,14,0.1);
+    position: sticky; top: 72px; z-index: 100;
+    display: flex; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .collection-tabs-bar::-webkit-scrollbar { display: none; }
+  .coll-tab {
+    flex: 0 0 auto;
+    padding: 1.2rem 2rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.62rem; letter-spacing: 0.2em; text-transform: uppercase;
+    border: none; background: transparent; color: var(--text-mid); cursor: pointer;
+    position: relative; white-space: nowrap;
+    transition: color 0.3s;
+  }
+  .coll-tab::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+    height: 2px; background: var(--gold); transform: scaleX(0); transition: transform 0.3s;
+  }
+  .coll-tab.active { color: var(--coffee); font-weight: 600; }
+  .coll-tab.active::after { transform: scaleX(1); }
+  .coll-tab:hover::after { transform: scaleX(1); }
+
+  /* ── MAIN LAYOUT ── */
+  .shop-layout {
+    display: grid; grid-template-columns: 260px 1fr;
+    gap: 0; min-height: 80vh;
+  }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--white); padding: 2.5rem 2rem;
+    border-right: 1px solid rgba(59,31,14,0.08);
+    position: sticky; top: 117px; height: fit-content;
+  }
+  .sidebar h4 {
+    font-size: 0.58rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--gold); margin-bottom: 1.4rem; font-weight: 600;
+  }
+  .filter-section { margin-bottom: 2.5rem; }
+  .filter-section h5 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1rem; color: var(--coffee); margin-bottom: 1rem;
+    padding-bottom: 0.6rem; border-bottom: 1px solid rgba(59,31,14,0.08);
+  }
+  .filter-option {
+    display: flex; align-items: center; gap: 0.7rem;
+    margin-bottom: 0.6rem; cursor: pointer;
+  }
+  .filter-option input[type="checkbox"] { display: none; }
+  .checkmark {
+    width: 16px; height: 16px; border: 1px solid rgba(59,31,14,0.25);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.25s; flex-shrink: 0;
+  }
+  .filter-option input:checked + .checkmark {
+    background: var(--coffee); border-color: var(--coffee);
+  }
+  .filter-option input:checked + .checkmark::after { content: '✓'; color: var(--ivory); font-size: 0.6rem; }
+  .filter-option span {
+    font-size: 0.7rem; color: var(--text-mid); letter-spacing: 0.05em;
+  }
+  .price-range { display: flex; flex-direction: column; gap: 0.8rem; }
+  .range-slider {
+    -webkit-appearance: none; width: 100%; height: 2px;
+    background: linear-gradient(to right, var(--gold) 60%, rgba(59,31,14,0.15) 60%);
+    outline: none; cursor: pointer;
+  }
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+    background: var(--gold); cursor: pointer; border: 2px solid var(--white);
+    box-shadow: 0 2px 8px rgba(201,168,76,0.4);
+  }
+  .price-labels { display: flex; justify-content: space-between; }
+  .price-labels span { font-size: 0.65rem; color: var(--text-mid); }
+  .color-swatches { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .swatch {
+    width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+  }
+  .swatch:hover, .swatch.active { border-color: var(--gold); transform: scale(1.15); }
+  .filter-clear {
+    width: 100%; padding: 0.8rem; margin-top: 1rem;
+    background: transparent; border: 1px solid rgba(59,31,14,0.2);
+    font-family: 'Montserrat', sans-serif; font-size: 0.6rem;
+    letter-spacing: 0.2em; text-transform: uppercase; color: var(--coffee-light);
+    cursor: pointer; transition: all 0.3s;
+  }
+  .filter-clear:hover { background: var(--coffee); color: var(--ivory); }
+
+  /* ── PRODUCT AREA ── */
+  .product-area { padding: 2.5rem 3rem; background: var(--ivory); }
+  .product-area-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .product-count {
+    font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-mid);
+  }
+  .product-count strong { color: var(--coffee); }
+  .sort-row { display: flex; align-items: center; gap: 1rem; }
+  .sort-select {
+    padding: 0.6rem 1.2rem; border: 1px solid rgba(59,31,14,0.2);
+    background: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.1em; color: var(--text-mid);
+    cursor: pointer; outline: none; appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A0623A'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 0.8rem center;
+    padding-right: 2.2rem;
+  }
+  .view-toggle { display: flex; gap: 0.4rem; }
+  .view-btn {
+    width: 34px; height: 34px; border: 1px solid rgba(59,31,14,0.2);
+    background: transparent; cursor: pointer; display: flex; align-items: center;
+    justify-content: center; font-size: 0.8rem; color: var(--text-mid);
+    transition: all 0.25s;
+  }
+  .view-btn.active { background: var(--coffee); color: var(--ivory); border-color: var(--coffee); }
+
+  /* ── PRODUCT GRID ── */
+  .products-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;
+    transition: opacity 0.3s;
+  }
+  .products-grid.list-view { grid-template-columns: 1fr; }
+  .products-grid.two-col { grid-template-columns: repeat(2, 1fr); }
+
+  /* ── PRODUCT CARD ── */
+  .product-card {
+    background: var(--white); position: relative; overflow: hidden;
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+    opacity: 0; transform: translateY(24px);
+    animation: cardIn 0.5s ease forwards;
+  }
+  @keyframes cardIn { to { opacity: 1; transform: translateY(0); } }
+  .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px rgba(59,31,14,0.14); }
+  .product-image-wrap { position: relative; overflow: hidden; aspect-ratio: 3/4; }
+  .product-card { overflow: visible; }
+  .product-card > .product-image-wrap { overflow: hidden; }
+  .product-image-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; }
+  .product-card:hover .product-image-wrap img { transform: scale(1.07); }
+  .p-badge {
+    position: absolute; top: 1rem; left: 1rem; z-index: 2;
+    font-size: 0.52rem; letter-spacing: 0.2em; text-transform: uppercase;
+    padding: 0.3rem 0.7rem;
+  }
+  .p-badge.new { background: var(--gold); color: var(--dark); }
+  .p-badge.sale { background: var(--coffee); color: var(--ivory); }
+  .p-badge.sold { background: rgba(26,14,7,0.7); color: rgba(245,239,230,0.6); }
+  .wishlist-btn {
+    position: absolute; top: 1rem; right: 1rem; z-index: 2;
+    width: 34px; height: 34px; border-radius: 50%;
+    background: rgba(253,250,246,0.9); border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 0.85rem;
+    opacity: 0; transform: scale(0.8); transition: opacity 0.3s, transform 0.3s;
+  }
+  .product-card:hover .wishlist-btn { opacity: 1; transform: scale(1); }
+  .wishlist-btn:hover { background: var(--gold); }
+  .product-actions {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    padding: 1rem; background: rgba(26,14,7,0.85);
+    display: flex; gap: 0.6rem;
+    transform: translateY(100%); transition: transform 0.35s ease;
+  }
+  .product-card:hover .product-actions { transform: translateY(0); }
+  .action-btn {
+    flex: 1; padding: 0.7rem; border: none; cursor: pointer;
+    font-family: 'Montserrat', sans-serif; font-size: 0.58rem;
+    letter-spacing: 0.18em; text-transform: uppercase; transition: all 0.3s;
+  }
+  .action-btn.cart { background: var(--gold); color: var(--dark); }
+  .action-btn.cart:hover { background: var(--gold-light); }
+  .action-btn.view { background: transparent; border: 1px solid rgba(201,168,76,0.5); color: var(--gold-light); }
+  .action-btn.view:hover { background: rgba(201,168,76,0.15); }
+  .product-info { padding: 1.4rem; }
+  .product-info .cat {
+    font-size: 0.55rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--coffee-light); margin-bottom: 0.4rem;
+  }
+  .product-info h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.2rem; font-weight: 500; color: var(--coffee); margin-bottom: 0.3rem;
+  }
+  .product-info .desc {
+    font-size: 0.65rem; color: var(--text-mid); line-height: 1.7;
+    margin-bottom: 0.8rem; font-weight: 300;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .product-info .price-row { display: flex; align-items: center; justify-content: space-between; }
+  .product-info .price {
+    font-size: 0.9rem; font-weight: 600; color: var(--coffee);
+  }
+  .product-info .old-price {
+    font-size: 0.72rem; color: var(--coffee-light); text-decoration: line-through; font-weight: 300; margin-left: 0.4rem;
+  }
+  .product-info .rating {
+    font-size: 0.6rem; color: var(--gold); letter-spacing: 0.05em;
+  }
+
+  /* ── LIST VIEW ── */
+  .products-grid.list-view .product-card {
+    display: grid; grid-template-columns: 220px 1fr;
+  }
+  .products-grid.list-view .product-image-wrap { aspect-ratio: auto; height: 260px; }
+  .products-grid.list-view .product-info { padding: 2rem; display: flex; flex-direction: column; justify-content: center; }
+  .products-grid.list-view .product-info h3 { font-size: 1.5rem; }
+  .products-grid.list-view .product-info .desc { -webkit-line-clamp: 4; }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 2000;
+    background: rgba(26,14,7,0.7); backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+    padding: 2rem;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--white); max-width: 900px; width: 100%;
+    display: grid; grid-template-columns: 1fr 1fr;
+    max-height: 90vh; overflow-y: auto;
+    transform: scale(0.94) translateY(20px); transition: transform 0.35s ease;
+  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+  .modal-image { position: relative; overflow: hidden; }
+  .modal-image img { width: 100%; height: 100%; object-fit: cover; }
+  .modal-body { padding: 3rem; display: flex; flex-direction: column; gap: 1.2rem; }
+  .modal-close {
+    position: absolute; top: 1rem; right: 1rem; z-index: 10;
+    width: 36px; height: 36px; border-radius: 50%;
+    background: rgba(26,14,7,0.6); color: var(--ivory); border: none;
+    cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+  }
+  .modal-close:hover { background: var(--coffee); }
+  .modal-cat { font-size: 0.55rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+  .modal-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem; font-weight: 400; color: var(--coffee); line-height: 1.1;
+  }
+  .modal-price { font-size: 1.3rem; font-weight: 600; color: var(--coffee); }
+  .modal-price .old { font-size: 0.9rem; color: var(--coffee-light); text-decoration: line-through; font-weight: 300; margin-left: 0.6rem; }
+  .modal-desc { font-size: 0.75rem; line-height: 1.9; color: var(--text-mid); font-weight: 300; }
+  .modal-divider { height: 1px; background: rgba(59,31,14,0.1); }
+  .modal-options h6 { font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 0.8rem; }
+  .size-options { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .size-btn {
+    padding: 0.5rem 1rem; border: 1px solid rgba(59,31,14,0.2);
+    background: transparent; font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; cursor: pointer; transition: all 0.25s;
+    color: var(--text-mid);
+  }
+  .size-btn:hover, .size-btn.active { background: var(--coffee); color: var(--ivory); border-color: var(--coffee); }
+  .modal-actions { display: flex; flex-direction: column; gap: 0.8rem; margin-top: auto; }
+  .modal-add-cart {
+    padding: 1.1rem; background: var(--coffee); color: var(--ivory);
+    border: none; font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+    cursor: pointer; transition: background 0.3s;
+  }
+  .modal-add-cart:hover { background: var(--coffee-mid); }
+  .modal-wishlist {
+    padding: 1rem; background: transparent;
+    border: 1px solid rgba(59,31,14,0.2); color: var(--coffee);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    cursor: pointer; transition: all 0.3s;
+  }
+  .modal-wishlist:hover { background: var(--cream); }
+  .modal-tags { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+  .modal-tag {
+    font-size: 0.55rem; letter-spacing: 0.15em; text-transform: uppercase;
+    padding: 0.3rem 0.8rem; background: var(--cream); color: var(--text-mid);
+  }
+
+  /* ── INLINE CART NOTIFICATION ── */
+  .cart-notify {
+    position: absolute; bottom: 0; left: 0; right: 0; z-index: 10;
+    background: linear-gradient(135deg, #2a5c2a, #1e7c1e);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.6rem; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 600;
+    transform: translateY(100%);
+    transition: transform 0.38s cubic-bezier(0.34,1.3,0.64,1);
+    pointer-events: none;
+  }
+  .cart-notify.show { transform: translateY(0); }
+  .cart-notify-tick {
+    width: 18px; height: 18px; border-radius: 50%;
+    background: rgba(255,255,255,0.25);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; flex-shrink: 0;
+  }
+
+  /* ── CART MINI ── */
+  .cart-icon {
+    position: fixed; top: 50%; right: 2rem; transform: translateY(-50%);
+    z-index: 900; background: var(--coffee); color: var(--ivory);
+    width: 52px; height: 52px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; cursor: pointer;
+    box-shadow: 0 8px 25px rgba(59,31,14,0.25); font-size: 1rem;
+    transition: background 0.3s, transform 0.3s;
+  }
+  .cart-icon:hover { background: var(--coffee-mid); transform: translateY(-50%) scale(1.05); }
+  .cart-count {
+    font-size: 0.55rem; letter-spacing: 0.1em; margin-top: 2px;
+    background: var(--gold); color: var(--dark); padding: 1px 5px;
+    font-weight: 600; min-width: 18px; text-align: center;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    grid-column: 1 / -1; text-align: center; padding: 5rem 2rem;
+    display: none;
+  }
+  .empty-state.show { display: block; }
+  .empty-state h3 {
+    font-family: 'Cormorant Garamond', serif; font-size: 2rem; color: var(--coffee-light); margin-bottom: 0.8rem;
+  }
+  .empty-state p { font-size: 0.75rem; color: var(--text-mid); }
+
+  /* ── MOBILE ── */
+  .filter-toggle {
+    display: none; align-items: center; gap: 0.5rem;
+    padding: 0.65rem 1.2rem; border: 1px solid rgba(59,31,14,0.2);
+    background: var(--white); font-family: 'Montserrat', sans-serif;
+    font-size: 0.6rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--coffee); cursor: pointer;
+  }
+  .filter-drawer {
+    position: fixed; inset: 0; z-index: 1500;
+    display: flex; pointer-events: none;
+  }
+  .filter-drawer-backdrop {
+    flex: 1; background: rgba(26,14,7,0.6); opacity: 0; transition: opacity 0.35s;
+  }
+  .filter-drawer-panel {
+    width: 300px; background: var(--white); overflow-y: auto;
+    padding: 2rem; transform: translateX(100%); transition: transform 0.4s ease;
+  }
+  .filter-drawer.open { pointer-events: all; }
+  .filter-drawer.open .filter-drawer-backdrop { opacity: 1; }
+  .filter-drawer.open .filter-drawer-panel { transform: translateX(0); }
+  .filter-drawer-close {
+    display: flex; justify-content: flex-end; margin-bottom: 1.5rem;
+  }
+  .filter-drawer-close button { background: none; border: none; font-size: 1.2rem; color: var(--coffee); cursor: pointer; }
+
+  @media (max-width: 1024px) {
+    .shop-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .filter-toggle { display: flex; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); }
+    .products-grid.list-view { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .product-area { padding: 2rem 1.5rem; }
+    .modal { grid-template-columns: 1fr; }
+    .modal-image { height: 280px; }
+    .hero-stats { gap: 1.5rem; }
+    .products-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+  }
+  @media (max-width: 480px) {
+    .products-grid { grid-template-columns: 1fr; }
+    .modal-body { padding: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- CART ICON -->
+<div class="cart-icon" onclick="toggleCartPanel()">
+  🛍
+  <div class="cart-count" id="cartCount">0</div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="preshhairs.html">PRESH HAIRS</a>
+  <ul class="nav-links">
+    <li><a href="preshhairs.html#story">Our Story</a></li>
+    <li><a href="collection.html" style="color:var(--coffee);font-weight:600;">Collections</a></li>
+    <li><a href="preshhairs.html#perfumes">Perfumes</a></li>
+    <li><a href="preshhairs.html#testimonials">Reviews</a></li>
+  </ul>
+  <a href="preshhairs.html" class="nav-back">← Back Home</a>
+  <div class="hamburger" id="hamburger">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="collection-hero" id="collHero">
+  <div class="collection-hero-bg" id="heroBg"></div>
+  <div class="collection-hero-overlay"></div>
+  <div class="collection-hero-content">
+    <div class="breadcrumb">
+      <a href="preshhairs.html">Home</a>
+      <span>/</span>
+      <span id="heroCategory">Collections</span>
+    </div>
+    <h1 id="heroTitle">All <em>Collections</em></h1>
+    <p id="heroSubtitle">Curated luxury for every chapter of your life</p>
+    <div class="hero-stats">
+      <div>
+        <div class="hero-stat-num" id="statCount">12</div>
+        <div class="hero-stat-label">Pieces</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">100%</div>
+        <div class="hero-stat-label">Premium Grade</div>
+      </div>
+      <div>
+        <div class="hero-stat-num">★ 4.9</div>
+        <div class="hero-stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- COLLECTION TABS -->
+<div class="collection-tabs-bar" id="collTabsBar">
+  <button class="coll-tab active" data-collection="all">All Collections</button>
+  <button class="coll-tab" data-collection="professional">9 to 5 Professional</button>
+  <button class="coll-tab" data-collection="student">Students Collection</button>
+  <button class="coll-tab" data-collection="errand">Errand &amp; Gym</button>
+  <button class="coll-tab" data-collection="raw">Raw Hairs</button>
+</div>
+
+<!-- MAIN -->
+<div class="shop-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h4>Filter &amp; Refine</h4>
+
+    <div class="filter-section">
+      <h5>Collection</h5>
+      <label class="filter-option"><input type="checkbox" checked onchange="filterByCollection(this,'professional')"><div class="checkmark"></div><span>9 to 5 Professional</span></label>
+      <label class="filter-option"><input type="checkbox" checked onchange="filterByCollection(this,'student')"><div class="checkmark"></div><span>Students Collection</span></label>
+      <label class="filter-option"><input type="checkbox" checked onchange="filterByCollection(this,'errand')"><div class="checkmark"></div><span>Errand &amp; Gym</span></label>
+      <label class="filter-option"><input type="checkbox" checked onchange="filterByCollection(this,'raw')"><div class="checkmark"></div><span>Raw Hairs</span></label>
+    </div>
+
+    <div class="filter-section">
+      <h5>Price Range</h5>
+      <div class="price-range">
+        <input type="range" class="range-slider" min="10000" max="200000" value="200000" id="priceRange" oninput="updatePriceFilter(this.value)" />
+        <div class="price-labels"><span>₦10,000</span><span id="priceMax">₦200,000</span></div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h5>Hair Colour</h5>
+      <div class="color-swatches">
+        <div class="swatch active" style="background:#1a1a1a;" title="Jet Black" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#3d2b1f;" title="Dark Brown" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#8B5E3C;" title="Warm Brown" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#C9A84C;" title="Blonde" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#8B0000;" title="Burgundy" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#2c2c5e;" title="Navy Blue" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#F0E6D3;" title="Ash Blonde" onclick="toggleSwatch(this)"></div>
+        <div class="swatch" style="background:#b87333;" title="Copper" onclick="toggleSwatch(this)"></div>
+      </div>
+    </div>
+
+    <div class="filter-section">
+      <h5>Availability</h5>
+      <label class="filter-option"><input type="checkbox" checked><div class="checkmark"></div><span>In Stock</span></label>
+      <label class="filter-option"><input type="checkbox"><div class="checkmark"></div><span>Made to Order</span></label>
+    </div>
+
+    <button class="filter-clear" onclick="clearFilters()">Clear All Filters</button>
+  </aside>
+
+  <!-- PRODUCT AREA -->
+  <div class="product-area">
+    <div class="product-area-top">
+      <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <button class="filter-toggle" onclick="openFilterDrawer()">⚙ Filters</button>
+        <p class="product-count">Showing <strong id="visibleCount">12</strong> products</p>
+      </div>
+      <div class="sort-row">
+        <select class="sort-select" onchange="sortProducts(this.value)">
+          <option value="featured">Featured</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="newest">Newest First</option>
+          <option value="rating">Top Rated</option>
+        </select>
+        <div class="view-toggle">
+          <button class="view-btn active" onclick="setView('grid',this)" title="Grid view">⊞</button>
+          <button class="view-btn" onclick="setView('list',this)" title="List view">☰</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="products-grid" id="productsGrid">
+      <!-- Rendered by JS -->
+    </div>
+    <div class="empty-state" id="emptyState">
+      <h3>No pieces found</h3>
+      <p>Try adjusting your filters or browse a different collection.</p>
+    </div>
+  </div>
+</div>
+
+<!-- FILTER DRAWER (mobile) -->
+<div class="filter-drawer" id="filterDrawer" onclick="handleDrawerClick(event)">
+  <div class="filter-drawer-backdrop"></div>
+  <div class="filter-drawer-panel">
+    <div class="filter-drawer-close"><button onclick="closeFilterDrawer()">✕</button></div>
+    <h4 style="font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:1.4rem;font-weight:600;">Filter &amp; Refine</h4>
+    <div class="filter-section">
+      <h5 style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--coffee);margin-bottom:1rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(59,31,14,0.08);">Collection</h5>
+      <label class="filter-option"><input type="checkbox" checked><div class="checkmark"></div><span>9 to 5 Professional</span></label>
+      <label class="filter-option"><input type="checkbox" checked><div class="checkmark"></div><span>Students Collection</span></label>
+      <label class="filter-option"><input type="checkbox" checked><div class="checkmark"></div><span>Errand &amp; Gym</span></label>
+      <label class="filter-option"><input type="checkbox" checked><div class="checkmark"></div><span>Raw Hairs</span></label>
+    </div>
+    <button class="filter-clear" onclick="closeFilterDrawer()">Apply Filters</button>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleModalClick(event)">
+  <div class="modal" id="modal">
+    <div class="modal-image">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <img src="" alt="" id="modalImg" />
+    </div>
+    <div class="modal-body">
+      <p class="modal-cat" id="modalCat"></p>
+      <h2 class="modal-title" id="modalTitle"></h2>
+      <p class="modal-price" id="modalPrice"></p>
+      <div class="modal-divider"></div>
+      <p class="modal-desc" id="modalDesc"></p>
+      <div class="modal-options">
+        <h6>Select Length</h6>
+        <div class="size-options">
+          <button class="size-btn" onclick="toggleSize(this)">10"</button>
+          <button class="size-btn active" onclick="toggleSize(this)">12"</button>
+          <button class="size-btn" onclick="toggleSize(this)">14"</button>
+          <button class="size-btn" onclick="toggleSize(this)">16"</button>
+          <button class="size-btn" onclick="toggleSize(this)">18"</button>
+          <button class="size-btn" onclick="toggleSize(this)">20"</button>
+        </div>
+      </div>
+      <div class="modal-options">
+        <h6>Hair Tags</h6>
+        <div class="modal-tags" id="modalTags"></div>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-add-cart" onclick="addToCartFromModal()">Add to Cart</button>
+        <button class="modal-wishlist">♡ Save to Wishlist</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+const PRODUCTS = [
+  // 9 to 5 Professional
+  { id:1, collection:'professional', name:'Executive Sleek Bob', sub:'9 to 5 Professional', price:85000, oldPrice:110000, badge:'Bestseller', rating:'★★★★★', desc:'A power wig designed for the boardroom. Silky straight, lace front, pre-plucked hairline with baby hairs. Lightweight cap for all-day wear.', tags:['Lace Front','Silky Straight','Pre-Plucked'], img:'https://picsum.photos/seed/pw1/480/640' },
+  { id:2, collection:'professional', name:'Power Lace Front', sub:'9 to 5 Professional', price:120000, oldPrice:null, badge:'New', rating:'★★★★★', desc:'A commanding full lace wig with a natural melt. Available in jet black and dark brown. Perfect for high-stakes meetings and presentations.', tags:['Full Lace','Natural Hairline','HD Lace'], img:'https://picsum.photos/seed/pw2/480/640' },
+  { id:3, collection:'professional', name:'Boardroom Silk Press', sub:'9 to 5 Professional', price:95000, oldPrice:null, badge:null, rating:'★★★★☆', desc:'Mimics a perfect silk press. Heat-resistant fibres that hold styling beautifully. Adjustable strap cap for secure fit.', tags:['Silk Press','Heat-Resistant','Adjustable Cap'], img:'https://picsum.photos/seed/pw3/480/640' },
+  { id:4, collection:'professional', name:'Corporate Closure Queen', sub:'9 to 5 Professional', price:78000, oldPrice:95000, badge:'Sale', rating:'★★★★★', desc:'A sleek 4x4 closure wig with a clean centre part. Effortlessly polished for every professional setting.', tags:['Closure','Centre Part','Shine'], img:'https://picsum.photos/seed/pw4/480/640' },
+  { id:5, collection:'professional', name:'Velvet Straight 180%', sub:'9 to 5 Professional', price:140000, oldPrice:null, badge:'Premium', rating:'★★★★★', desc:'Ultra-dense 180% density lace front with a velvet-like feel. The ultimate statement piece for women who command any room.', tags:['180% Density','Velvet Texture','Statement'], img:'https://picsum.photos/seed/pw5/480/640' },
+  { id:6, collection:'professional', name:'Midnight Bob Lace', sub:'9 to 5 Professional', price:92000, oldPrice:null, badge:null, rating:'★★★★☆', desc:'A chic blunt bob that grazes the shoulders. Jet black with a subtle gloss finish. Clean, sharp, and utterly professional.', tags:['Bob','Blunt Cut','Jet Black'], img:'https://picsum.photos/seed/pw6/480/640' },
+
+  // Students
+  { id:7, collection:'student', name:'Campus Chic Curls', sub:'Students Collection', price:45000, oldPrice:null, badge:'Popular', rating:'★★★★★', desc:'Bouncy natural curls that go from lecture hall to late-night hangout. Lightweight and breathable cap — perfect for long campus days.', tags:['Curly','Lightweight','Natural Look'], img:'https://picsum.photos/seed/sw1/480/640' },
+  { id:8, collection:'student', name:'Study Hall Glam', sub:'Students Collection', price:55000, oldPrice:65000, badge:'Sale', rating:'★★★★☆', desc:'Sleek, straight, and budget-friendly luxury. Looks expensive without the price tag. Deep wave variant also available.', tags:['Straight','Budget Luxury','Deep Wave'], img:'https://picsum.photos/seed/sw2/480/640' },
+  { id:9, collection:'student', name:'Effortless Wave Unit', sub:'Students Collection', price:38000, oldPrice:null, badge:null, rating:'★★★☆☆', desc:'Beachy loose waves that require zero styling effort. Pre-styled from day one. Great for students with a hectic schedule.', tags:['Loose Wave','No Styling','Easy Wear'], img:'https://picsum.photos/seed/sw3/480/640' },
+  { id:10, collection:'student', name:'Weekend Kinks', sub:'Students Collection', price:32000, oldPrice:null, badge:'New', rating:'★★★★★', desc:'Natural kinky coils that celebrate your roots. Perfect for weekend adventures and casual campus days.', tags:['Kinky','Natural','Protective'], img:'https://picsum.photos/seed/sw4/480/640' },
+
+  // Errand & Gym
+  { id:11, collection:'errand', name:'On-The-Go Ponytail', sub:'Errand & Gym', price:28000, oldPrice:null, badge:null, rating:'★★★★☆', desc:'High ponytail unit that stays put through runs, errands, and grocery hauls. Secure grip band — no shifting, no slipping.', tags:['Ponytail','Secure Grip','Sporty'], img:'https://picsum.photos/seed/ew1/480/640' },
+  { id:12, collection:'errand', name:'Sweat-Proof Braid Unit', sub:'Errand & Gym', price:32000, oldPrice:null, badge:'New', rating:'★★★★★', desc:'Box braid wig unit engineered for active women. Moisture-wicking lining, elastic band, and feather-light weight.', tags:['Braids','Moisture-Wick','Active'], img:'https://picsum.photos/seed/ew2/480/640' },
+  { id:13, collection:'errand', name:'Active Kinks & Coils', sub:'Errand & Gym', price:22000, oldPrice:null, badge:null, rating:'★★★★☆', desc:'Afro kinks unit perfect for high-intensity workouts. Breathable mesh cap keeps you cool and comfortable.', tags:['Afro','Breathable','Gym'], img:'https://picsum.photos/seed/ew3/480/640' },
+  { id:14, collection:'errand', name:'Quick-Fix Twist Out', sub:'Errand & Gym', price:25000, oldPrice:30000, badge:'Sale', rating:'★★★★☆', desc:'A twist-out style wig for when you need to dash out but still look effortless. Pre-styled, secure, done.', tags:['Twist Out','Quick Wear','Effortless'], img:'https://picsum.photos/seed/ew4/480/640' },
+
+  // Raw Hairs
+  { id:15, collection:'raw', name:'Vietnamese Raw Bundle', sub:'Raw Hairs', price:150000, oldPrice:null, badge:'Premium', rating:'★★★★★', desc:'Single-donor Vietnamese raw hair — silky, strong, and gloriously thick. Can be dyed, bleached, and heat-styled repeatedly without damage.', tags:['Single Donor','Dyeable','Bleachable'], img:'https://picsum.photos/seed/rw1/480/640' },
+  { id:16, collection:'raw', name:'Cambodian Wavy Raw', sub:'Raw Hairs', price:175000, oldPrice:null, badge:'Premium', rating:'★★★★★', desc:'Authentic Cambodian wavy texture that tightens beautifully in water. Full, dense, and full of natural wave memory.', tags:['Cambodian','Wavy','Water-Friendly'], img:'https://picsum.photos/seed/rw2/480/640' },
+  { id:17, collection:'raw', name:'Burmese Straight Raw', sub:'Raw Hairs', price:160000, oldPrice:195000, badge:'Sale', rating:'★★★★☆', desc:'Luxurious Burmese straight raw hair with natural shine and incredible density. Ideal for wigs, weaves, and closures.', tags:['Burmese','Straight','Dense'], img:'https://picsum.photos/seed/rw3/480/640' },
+  { id:18, collection:'raw', name:'Indian Loose Deep', sub:'Raw Hairs', price:145000, oldPrice:null, badge:'New', rating:'★★★★★', desc:'Natural Indian loose deep wave raw bundles. Minimal shedding, thick roots-to-tips, and a gorgeous natural wave pattern.', tags:['Indian','Loose Deep','Minimal Shed'], img:'https://picsum.photos/seed/rw4/480/640' },
+];
+
+// ── STATE ──
+let activeCollection = 'all';
+let maxPrice = 200000;
+let cartCount = 0;
+let currentModalProduct = null;
+let disabledCollections = new Set();
+
+// ── HERO CONFIG ──
+const heroConfig = {
+  all:          { bg: 'https://picsum.photos/seed/presshero2/1600/600', title: 'All <em>Collections</em>', sub: 'Curated luxury for every chapter of your life', count: PRODUCTS.length },
+  professional: { bg: 'https://picsum.photos/seed/proph/1600/600',      title: '9 to 5 <em>Professional</em>',   sub: 'Commanding elegance for the boardroom and beyond', count: 6 },
+  student:      { bg: 'https://picsum.photos/seed/prostud/1600/600',    title: 'Students <em>Collection</em>',   sub: 'Luxury within reach — style that keeps up with you', count: 4 },
+  errand:       { bg: 'https://picsum.photos/seed/proerr/1600/600',     title: 'Errand <em>&amp; Gym</em>',     sub: 'Active beauty for women always on the move', count: 4 },
+  raw:          { bg: 'https://picsum.photos/seed/proraw/1600/600',     title: 'Raw <em>Hairs</em>',            sub: 'Unprocessed. Unfiltered. Undeniably luxurious.', count: 4 },
+};
+
+// ── RENDER ──
+function getFiltered() {
+  return PRODUCTS.filter(p => {
+    const collMatch = activeCollection === 'all' ? !disabledCollections.has(p.collection) : p.collection === activeCollection;
+    return collMatch && p.price <= maxPrice;
+  });
+}
+
+function renderProducts(products) {
+  const grid = document.getElementById('productsGrid');
+  const empty = document.getElementById('emptyState');
+  document.getElementById('visibleCount').textContent = products.length;
+  if (!products.length) { grid.innerHTML = ''; empty.classList.add('show'); return; }
+  empty.classList.remove('show');
+  grid.innerHTML = products.map((p, i) => `
+    <div class="product-card" style="animation-delay:${i * 0.06}s" data-id="${p.id}">
+      <div class="product-image-wrap">
+        <img src="${p.img}" alt="${p.name}" loading="lazy" />
+        ${p.badge ? `<span class="p-badge ${p.badge === 'Sale' ? 'sale' : p.badge === 'Sold Out' ? 'sold' : 'new'}">${p.badge}</span>` : ''}
+        <button class="wishlist-btn" onclick="event.stopPropagation();wishlistToggle(this)" title="Wishlist">♡</button>
+        <div class="product-actions">
+          <button class="action-btn cart" onclick="event.stopPropagation();addToCart(${p.id})">Add to Cart</button>
+          <button class="action-btn view" onclick="event.stopPropagation();openModal(${p.id})">Quick View</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <div class="cat">${p.sub}</div>
+        <h3>${p.name}</h3>
+        <p class="desc">${p.desc}</p>
+        <div class="price-row">
+          <div>
+            <span class="price">₦${p.price.toLocaleString()}</span>
+            ${p.oldPrice ? `<span class="old-price">₦${p.oldPrice.toLocaleString()}</span>` : ''}
+          </div>
+          <span class="rating">${p.rating}</span>
+        </div>
+      </div>
+      <div class="cart-notify" id="notify-${p.id}">
+        <div class="cart-notify-tick">✓</div>
+        <span>Added to Cart</span>
+      </div>
+    </div>
+  `).join('');
+  grid.querySelectorAll('.product-card').forEach(card => {
+    card.addEventListener('click', () => openModal(+card.dataset.id));
+  });
+}
+
+function updateHero(key) {
+  const cfg = heroConfig[key];
+  document.getElementById('heroBg').style.backgroundImage = `url('${cfg.bg}')`;
+  document.getElementById('heroTitle').innerHTML = cfg.title;
+  document.getElementById('heroSubtitle').textContent = cfg.sub;
+  document.getElementById('heroCategory').textContent = key === 'all' ? 'Collections' : cfg.title.replace(/<[^>]+>/g,'');
+  document.getElementById('statCount').textContent = cfg.count;
+}
+
+// ── TABS ──
+document.querySelectorAll('.coll-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.coll-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCollection = btn.dataset.collection;
+    updateHero(activeCollection);
+    renderProducts(getFiltered());
+    window.scrollTo({ top: document.getElementById('collTabsBar').offsetTop - 72, behavior: 'smooth' });
+  });
+});
+
+// ── FILTER ──
+function filterByCollection(cb, key) {
+  if (cb.checked) disabledCollections.delete(key);
+  else disabledCollections.add(key);
+  renderProducts(getFiltered());
+}
+function updatePriceFilter(val) {
+  maxPrice = +val;
+  document.getElementById('priceMax').textContent = '₦' + (+val).toLocaleString();
+  renderProducts(getFiltered());
+}
+function clearFilters() {
+  maxPrice = 200000;
+  disabledCollections.clear();
+  document.getElementById('priceRange').value = 200000;
+  document.getElementById('priceMax').textContent = '₦200,000';
+  document.querySelectorAll('.sidebar input[type=checkbox]').forEach(c => c.checked = true);
+  renderProducts(getFiltered());
+}
+function toggleSwatch(el) { el.classList.toggle('active'); }
+
+// ── SORT ──
+function sortProducts(val) {
+  let items = getFiltered();
+  if (val === 'price-asc') items.sort((a,b) => a.price - b.price);
+  else if (val === 'price-desc') items.sort((a,b) => b.price - a.price);
+  else if (val === 'newest') items = items.slice().reverse();
+  renderProducts(items);
+}
+
+// ── VIEW ──
+function setView(v, btn) {
+  document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('productsGrid');
+  grid.classList.remove('list-view','two-col');
+  if (v === 'list') grid.classList.add('list-view');
+}
+
+// ── MODAL ──
+function openModal(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  if (!p) return;
+  currentModalProduct = p;
+  document.getElementById('modalImg').src = p.img;
+  document.getElementById('modalImg').alt = p.name;
+  document.getElementById('modalCat').textContent = p.sub;
+  document.getElementById('modalTitle').textContent = p.name;
+  document.getElementById('modalPrice').innerHTML = `₦${p.price.toLocaleString()}${p.oldPrice ? `<span class="old">₦${p.oldPrice.toLocaleString()}</span>` : ''}`;
+  document.getElementById('modalDesc').textContent = p.desc;
+  document.getElementById('modalTags').innerHTML = p.tags.map(t => `<span class="modal-tag">${t}</span>`).join('');
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleModalClick(e) { if (e.target === document.getElementById('modalOverlay')) closeModal(); }
+function toggleSize(btn) {
+  btn.parentElement.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function addToCartFromModal() {
+  if (currentModalProduct) {
+    const id = currentModalProduct.id;
+    closeModal();
+    // slight delay so card is visible first
+    setTimeout(() => addToCart(id), 300);
+  }
+}
+
+// ── CART ──
+function addToCart(id) {
+  cartCount++;
+  document.getElementById('cartCount').textContent = cartCount;
+  // Show inline notification on the card
+  const notify = document.getElementById(`notify-${id}`);
+  if (notify) {
+    notify.classList.add('show');
+    setTimeout(() => notify.classList.remove('show'), 2200);
+  }
+}
+function toggleCartPanel() {
+  // Brief bounce on cart icon
+  const icon = document.querySelector('.cart-icon');
+  icon.style.transform = 'translateY(-50%) scale(1.2)';
+  setTimeout(() => icon.style.transform = 'translateY(-50%) scale(1)', 250);
+}
+
+// ── WISHLIST ──
+function wishlistToggle(btn) {
+  btn.textContent = btn.textContent === '♡' ? '♥' : '♡';
+  btn.style.background = btn.textContent === '♥' ? 'var(--gold)' : '';
+}
+
+// ── DRAWER ──
+function openFilterDrawer() { document.getElementById('filterDrawer').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeFilterDrawer() { document.getElementById('filterDrawer').classList.remove('open'); document.body.style.overflow=''; }
+function handleDrawerClick(e) { if (e.target.classList.contains('filter-drawer-backdrop')) closeFilterDrawer(); }
+
+// ── URL PARAM (so preshhairs.html links work) ──
+function initFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  const col = params.get('collection');
+  if (col && heroConfig[col]) {
+    activeCollection = col;
+    document.querySelectorAll('.coll-tab').forEach(b => {
+      b.classList.toggle('active', b.dataset.collection === col);
+    });
+    updateHero(col);
+  } else {
+    updateHero('all');
+  }
+  renderProducts(getFiltered());
+}
+
+initFromURL();
+</script>
+</body>
+</html>
