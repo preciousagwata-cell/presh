@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRESH HAIRS — Your Cart</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root{
+    --coffee:#3B1F0E;--coffee-mid:#6B3A20;--coffee-light:#A0623A;
+    --ivory:#F5EFE6;--cream:#EDE4D5;--gold:#C9A84C;--gold-light:#E2C47A;
+    --dark:#1A0E07;--text-dark:#2C1A0E;--text-mid:#5C3D25;--white:#FDFAF6;
+    --green:#1e7c1e;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Montserrat',sans-serif;background:var(--ivory);color:var(--text-dark);}
+  ::-webkit-scrollbar{width:6px;} ::-webkit-scrollbar-track{background:var(--cream);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+  /* NAV */
+  nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:1.4rem 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(250,246,240,0.97);backdrop-filter:blur(12px);box-shadow:0 2px 30px rgba(59,31,14,0.08);}
+  .nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.7rem;font-weight:600;letter-spacing:0.18em;color:var(--coffee);text-decoration:none;}
+  .nav-links{display:flex;gap:2.4rem;list-style:none;}
+  .nav-links a{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mid);text-decoration:none;transition:color 0.3s;}
+  .nav-links a:hover{color:var(--coffee);}
+  .nav-continue{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--coffee-light);text-decoration:none;display:flex;align-items:center;gap:0.5rem;transition:color 0.3s;}
+  .nav-continue:hover{color:var(--coffee);}
+
+  /* PAGE HERO */
+  .page-hero{margin-top:72px;background:var(--coffee);padding:3rem 5%;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .page-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3.2rem);font-weight:300;color:var(--ivory);}
+  .page-hero h1 em{font-style:italic;color:var(--gold-light);}
+  .page-hero-meta{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(245,239,230,0.5);}
+
+  /* STEPS */
+  .checkout-steps{background:var(--white);border-bottom:1px solid rgba(59,31,14,0.08);padding:1rem 5%;display:flex;align-items:center;gap:0;overflow-x:auto;}
+  .step{display:flex;align-items:center;gap:0.6rem;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:rgba(59,31,14,0.35);white-space:nowrap;}
+  .step.active{color:var(--coffee);font-weight:600;}
+  .step.done{color:var(--green);}
+  .step-num{width:24px;height:24px;border-radius:50%;border:1px solid currentColor;display:flex;align-items:center;justify-content:center;font-size:0.6rem;flex-shrink:0;}
+  .step.done .step-num{background:var(--green);border-color:var(--green);color:#fff;}
+  .step.active .step-num{background:var(--coffee);border-color:var(--coffee);color:var(--ivory);}
+  .step-arrow{color:rgba(59,31,14,0.2);margin:0 1rem;font-size:0.7rem;}
+
+  /* LAYOUT */
+  .cart-layout{display:grid;grid-template-columns:1fr 380px;gap:2rem;padding:3rem 5%;max-width:1400px;margin:0 auto;}
+
+  /* CART ITEMS */
+  .cart-items-panel{display:flex;flex-direction:column;gap:1rem;}
+  .cart-section-title{font-size:0.6rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);margin-bottom:0.5rem;display:flex;align-items:center;gap:0.8rem;}
+  .cart-section-title::after{content:'';flex:1;height:1px;background:rgba(201,168,76,0.25);}
+
+  /* CART ITEM CARD */
+  .cart-item-card{background:var(--white);display:grid;grid-template-columns:120px 1fr;gap:0;overflow:hidden;transition:box-shadow 0.3s;}
+  .cart-item-card:hover{box-shadow:0 8px 30px rgba(59,31,14,0.1);}
+  .item-img-wrap{position:relative;overflow:hidden;}
+  .item-img-wrap img{width:100%;height:160px;object-fit:cover;transition:transform 0.5s;}
+  .cart-item-card:hover .item-img-wrap img{transform:scale(1.05);}
+  .item-body{padding:1.5rem;display:flex;flex-direction:column;justify-content:space-between;}
+  .item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;}
+  .item-info{}
+  .item-coll{font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.3rem;}
+  .item-name{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:500;color:var(--coffee);margin-bottom:0.4rem;}
+  .item-meta{font-size:0.6rem;color:var(--text-mid);letter-spacing:0.08em;}
+  .item-remove{background:none;border:none;color:var(--coffee-light);cursor:pointer;font-size:0.85rem;padding:0.3rem;transition:color 0.2s;flex-shrink:0;}
+  .item-remove:hover{color:darkred;}
+  .item-bottom{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;flex-wrap:wrap;gap:0.8rem;}
+  .item-price{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--coffee);font-weight:500;}
+  .item-price-unit{font-size:0.6rem;color:var(--text-mid);font-family:'Montserrat',sans-serif;}
+  .qty-ctrl{display:flex;align-items:center;border:1px solid rgba(59,31,14,0.15);}
+  .qty-btn{width:34px;height:34px;border:none;background:transparent;font-size:1rem;color:var(--coffee);cursor:pointer;transition:background 0.2s;}
+  .qty-btn:hover{background:var(--cream);}
+  .qty-val{width:40px;text-align:center;font-size:0.8rem;font-weight:600;color:var(--coffee);border:none;background:transparent;outline:none;}
+  .save-later{font-size:0.58rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--coffee-light);background:none;border:none;cursor:pointer;transition:color 0.2s;text-decoration:underline;}
+  .save-later:hover{color:var(--coffee);}
+
+  /* EMPTY STATE */
+  .empty-cart{background:var(--white);padding:5rem 3rem;text-align:center;display:none;}
+  .empty-cart.show{display:block;}
+  .empty-cart h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--coffee-light);margin-bottom:1rem;}
+  .empty-cart p{font-size:0.75rem;color:var(--text-mid);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:2rem;}
+  .empty-cart a{display:inline-block;padding:1rem 2.5rem;background:var(--coffee);color:var(--ivory);font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;text-decoration:none;transition:background 0.3s;}
+  .empty-cart a:hover{background:var(--coffee-mid);}
+
+  /* PROMO */
+  .promo-row{display:flex;gap:0;border:1px solid rgba(59,31,14,0.15);overflow:hidden;margin-bottom:1rem;}
+  .promo-input{flex:1;padding:1rem 1.2rem;border:none;outline:none;font-family:'Montserrat',sans-serif;font-size:0.72rem;background:var(--white);color:var(--text-dark);letter-spacing:0.05em;}
+  .promo-input::placeholder{color:rgba(92,61,37,0.4);}
+  .promo-btn{padding:1rem 1.6rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:background 0.3s;}
+  .promo-btn:hover{background:var(--coffee-mid);}
+  .promo-success{font-size:0.62rem;color:var(--green);letter-spacing:0.1em;padding:0.5rem 0;display:none;}
+  .promo-success.show{display:block;}
+
+  /* ORDER SUMMARY */
+  .order-summary{background:var(--white);padding:2rem;position:sticky;top:100px;height:fit-content;}
+  .summary-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--coffee);margin-bottom:1.5rem;padding-bottom:1rem;border-bottom:1px solid rgba(59,31,14,0.08);}
+  .summary-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.8rem;}
+  .summary-line span{font-size:0.7rem;color:var(--text-mid);letter-spacing:0.05em;}
+  .summary-line strong{font-size:0.75rem;color:var(--coffee);font-weight:600;}
+  .summary-line.discount strong{color:var(--green);}
+  .summary-divider{height:1px;background:rgba(59,31,14,0.08);margin:1rem 0;}
+  .summary-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem;}
+  .summary-total span{font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mid);}
+  .summary-total strong{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--coffee);}
+  .summary-vat{font-size:0.58rem;color:var(--text-mid);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.5rem;}
+  .btn-checkout{width:100%;padding:1.2rem;background:var(--gold);color:var(--dark);border:none;font-family:'Montserrat',sans-serif;font-size:0.68rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;margin-bottom:0.7rem;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:0.7rem;}
+  .btn-checkout:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 8px 25px rgba(201,168,76,0.35);}
+  .btn-continue{width:100%;padding:1rem;background:transparent;border:1px solid rgba(59,31,14,0.2);color:var(--coffee);font-family:'Montserrat',sans-serif;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;text-decoration:none;display:block;text-align:center;}
+  .btn-continue:hover{background:var(--cream);}
+  .secure-badges{display:flex;justify-content:center;gap:1.5rem;margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(59,31,14,0.08);}
+  .badge-item{display:flex;flex-direction:column;align-items:center;gap:0.3rem;font-size:0.5rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mid);}
+  .badge-icon{font-size:1.3rem;}
+
+  /* DELIVERY OPTIONS */
+  .delivery-opts{margin:1rem 0;display:flex;flex-direction:column;gap:0.6rem;}
+  .delivery-opt{display:flex;align-items:center;gap:0.8rem;padding:0.9rem 1rem;border:1px solid rgba(59,31,14,0.15);cursor:pointer;transition:border-color 0.25s;background:var(--white);}
+  .delivery-opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.05);}
+  .delivery-opt input[type=radio]{accent-color:var(--gold);width:16px;height:16px;}
+  .delivery-opt-info{flex:1;}
+  .delivery-opt-name{font-size:0.65rem;font-weight:600;color:var(--coffee);letter-spacing:0.05em;}
+  .delivery-opt-desc{font-size:0.58rem;color:var(--text-mid);}
+  .delivery-opt-price{font-size:0.72rem;font-weight:600;color:var(--coffee);}
+
+  /* YOU MAY ALSO LIKE */
+  .also-like{padding:3rem 0 0;}
+  .also-like h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--coffee);margin-bottom:0.4rem;}
+  .also-like-sub{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;}
+  .also-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;}
+  .also-card{cursor:pointer;text-decoration:none;transition:transform 0.3s;}
+  .also-card:hover{transform:translateY(-4px);}
+  .also-img{aspect-ratio:3/4;overflow:hidden;margin-bottom:0.6rem;}
+  .also-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.4s;}
+  .also-card:hover .also-img img{transform:scale(1.05);}
+  .also-name{font-size:0.65rem;font-weight:600;color:var(--coffee);}
+  .also-price{font-size:0.62rem;color:var(--text-mid);}
+
+  /* CHECKOUT OVERLAY */
+  .checkout-overlay{position:fixed;inset:0;background:rgba(26,14,7,0.75);z-index:3000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.3s;padding:2rem;}
+  .checkout-overlay.open{opacity:1;pointer-events:all;}
+  .checkout-modal{background:var(--white);max-width:500px;width:100%;padding:3rem;text-align:center;transform:translateY(20px);transition:transform 0.3s;}
+  .checkout-overlay.open .checkout-modal{transform:translateY(0);}
+  .checkout-modal h2{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--coffee);margin-bottom:0.8rem;}
+  .checkout-modal p{font-size:0.72rem;color:var(--text-mid);line-height:1.8;margin-bottom:2rem;}
+  .checkout-form{display:flex;flex-direction:column;gap:0.8rem;text-align:left;}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem;}
+  .form-label{font-size:0.6rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-mid);}
+  .form-input{padding:0.9rem 1rem;border:1px solid rgba(59,31,14,0.2);background:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.75rem;color:var(--text-dark);outline:none;transition:border-color 0.25s;}
+  .form-input:focus{border-color:var(--gold);}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;}
+  .btn-place-order{width:100%;padding:1.2rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;margin-top:0.5rem;transition:background 0.3s;}
+  .btn-place-order:hover{background:var(--coffee-mid);}
+  .modal-close-btn{position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.2rem;color:var(--text-mid);cursor:pointer;}
+
+  /* SUCCESS */
+  .success-screen{position:fixed;inset:0;background:var(--ivory);z-index:4000;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem;opacity:0;pointer-events:none;transition:opacity 0.4s;}
+  .success-screen.show{opacity:1;pointer-events:all;}
+  .success-icon{font-size:4rem;margin-bottom:1.5rem;animation:popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;}
+  @keyframes popIn{from{transform:scale(0);}to{transform:scale(1);}}
+  .success-screen h2{font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--coffee);margin-bottom:0.8rem;}
+  .success-screen p{font-size:0.75rem;color:var(--text-mid);max-width:420px;line-height:1.9;margin-bottom:2rem;}
+  .success-screen a{padding:1rem 2.5rem;background:var(--coffee);color:var(--ivory);font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;text-decoration:none;transition:background 0.3s;}
+  .success-screen a:hover{background:var(--coffee-mid);}
+  .order-ref{font-family:'Cormorant Garamond',serif;font-size:1.5rem;color:var(--gold);margin-bottom:1.5rem;}
+
+  @media(max-width:960px){
+    .cart-layout{grid-template-columns:1fr;}
+    .order-summary{position:static;}
+  }
+  @media(max-width:600px){
+    .nav-links{display:none;}
+    .cart-item-card{grid-template-columns:100px 1fr;}
+    .also-grid{grid-template-columns:repeat(2,1fr);}
+    .form-row{grid-template-columns:1fr;}
+    .checkout-modal{padding:2rem 1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <h2>Order Placed!</h2>
+  <div class="order-ref" id="orderRef">Order #PH-000000</div>
+  <p>Thank you for choosing PRESH HAIRS. Your order has been received and our team will contact you shortly to confirm delivery details.</p>
+  <a href="preshhairs.html">Continue Shopping</a>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="checkout-overlay" id="checkoutOverlay">
+  <div class="checkout-modal" style="position:relative;">
+    <button class="modal-close-btn" onclick="closeCheckout()">✕</button>
+    <h2>Complete Your Order</h2>
+    <p>Fill in your delivery details below and our team will contact you to confirm.</p>
+    <div class="checkout-form">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">First Name</label><input class="form-input" placeholder="e.g. Adaeze" id="fName"/></div>
+        <div class="form-group"><label class="form-label">Last Name</label><input class="form-input" placeholder="e.g. Okafor" id="lName"/></div>
+      </div>
+      <div class="form-group"><label class="form-label">Phone Number</label><input class="form-input" placeholder="+234 800 000 0000" id="fPhone"/></div>
+      <div class="form-group"><label class="form-label">Email Address</label><input class="form-input" placeholder="you@example.com" id="fEmail" type="email"/></div>
+      <div class="form-group"><label class="form-label">Delivery Address</label><input class="form-input" placeholder="Street, City, State" id="fAddress"/></div>
+      <div class="form-group"><label class="form-label">Order Notes (optional)</label><input class="form-input" placeholder="Any special requests..." id="fNotes"/></div>
+      <button class="btn-place-order" onclick="placeOrder()">Place Order — Pay on Delivery</button>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="preshhairs.html">PRESH HAIRS</a>
+  <ul class="nav-links">
+    <li><a href="preshhairs.html#story">Our Story</a></li>
+    <li><a href="collection.html">Collections</a></li>
+    <li><a href="preshhairs.html#perfumes">Perfumes</a></li>
+  </ul>
+  <a href="collection.html" class="nav-continue">← Continue Shopping</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <div>
+    <h1>Your <em>Cart</em></h1>
+  </div>
+  <div class="page-hero-meta" id="cartMeta">0 items</div>
+</div>
+
+<!-- STEPS -->
+<div class="checkout-steps">
+  <div class="step done"><div class="step-num">✓</div> Browse</div>
+  <div class="step-arrow">›</div>
+  <div class="step active"><div class="step-num">2</div> Cart</div>
+  <div class="step-arrow">›</div>
+  <div class="step"><div class="step-num">3</div> Details</div>
+  <div class="step-arrow">›</div>
+  <div class="step"><div class="step-num">4</div> Confirm</div>
+</div>
+
+<!-- LAYOUT -->
+<div class="cart-layout">
+
+  <!-- LEFT: ITEMS -->
+  <div>
+    <p class="cart-section-title">Cart Items</p>
+
+    <div class="cart-items-panel" id="cartItemsPanel"></div>
+    <div class="empty-cart" id="emptyCart">
+      <h2>Your cart is empty</h2>
+      <p>You haven't added anything yet</p>
+      <a href="collection.html">Browse Collections</a>
+    </div>
+
+    <!-- PROMO -->
+    <div style="margin-top:2rem;">
+      <p class="cart-section-title">Promo Code</p>
+      <div class="promo-row">
+        <input class="promo-input" id="promoInput" placeholder="Enter promo code e.g. PRESH10"/>
+        <button class="promo-btn" onclick="applyPromo()">Apply</button>
+      </div>
+      <p class="promo-success" id="promoSuccess">✓ Code applied — 10% discount added!</p>
+    </div>
+
+    <!-- DELIVERY -->
+    <div style="margin-top:2rem;">
+      <p class="cart-section-title">Delivery Method</p>
+      <div class="delivery-opts">
+        <label class="delivery-opt selected" id="opt-standard">
+          <input type="radio" name="delivery" value="0" checked onchange="selectDelivery(this,0,'opt-standard')"/>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Standard Delivery</div>
+            <div class="delivery-opt-desc">2–5 business days nationwide</div>
+          </div>
+          <div class="delivery-opt-price">Free on orders ≥₦50k</div>
+        </label>
+        <label class="delivery-opt" id="opt-express">
+          <input type="radio" name="delivery" value="5000" onchange="selectDelivery(this,5000,'opt-express')"/>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Express Delivery (Lagos only)</div>
+            <div class="delivery-opt-desc">Same day if ordered before 12pm</div>
+          </div>
+          <div class="delivery-opt-price">₦5,000</div>
+        </label>
+        <label class="delivery-opt" id="opt-pickup">
+          <input type="radio" name="delivery" value="0" onchange="selectDelivery(this,0,'opt-pickup')"/>
+          <div class="delivery-opt-info">
+            <div class="delivery-opt-name">Store Pickup</div>
+            <div class="delivery-opt-desc">Pick up at our showroom — Lagos</div>
+          </div>
+          <div class="delivery-opt-price">Free</div>
+        </label>
+      </div>
+    </div>
+
+    <!-- YOU MAY ALSO LIKE -->
+    <div class="also-like">
+      <p class="also-like-sub">Don't Miss These</p>
+      <h3>You May Also <em style="font-style:italic;color:var(--coffee-light);">Love</em></h3>
+      <div class="also-grid" id="alsoGrid"></div>
+    </div>
+  </div>
+
+  <!-- RIGHT: SUMMARY -->
+  <div class="order-summary">
+    <h2 class="summary-title">Order Summary</h2>
+
+    <div class="summary-line">
+      <span>Subtotal (<span id="sumCount">0</span> items)</span>
+      <strong id="sumSubtotal">₦0</strong>
+    </div>
+    <div class="summary-line discount" id="discountLine" style="display:none;">
+      <span>Promo Discount (10%)</span>
+      <strong id="sumDiscount">-₦0</strong>
+    </div>
+    <div class="summary-line">
+      <span>Delivery</span>
+      <strong id="sumDelivery">Free</strong>
+    </div>
+
+    <div class="summary-divider"></div>
+
+    <div class="summary-total">
+      <span>Total</span>
+      <strong id="sumTotal">₦0</strong>
+    </div>
+    <p class="summary-vat">VAT inclusive · Prices in Nigerian Naira</p>
+
+    <button class="btn-checkout" onclick="openCheckout()">
+      Proceed to Checkout →
+    </button>
+    <a href="collection.html" class="btn-continue">← Continue Shopping</a>
+
+    <div class="secure-badges">
+      <div class="badge-item"><span class="badge-icon">🔒</span>Secure</div>
+      <div class="badge-item"><span class="badge-icon">✦</span>Authentic</div>
+      <div class="badge-item"><span class="badge-icon">🚚</span>Tracked</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PRODUCTS=[
+  {id:1,collection:'professional',name:'Executive Sleek Bob',sub:'9 to 5 Professional',price:85000,img:'https://picsum.photos/seed/pw1/480/640'},
+  {id:2,collection:'professional',name:'Power Lace Front',sub:'9 to 5 Professional',price:120000,img:'https://picsum.photos/seed/pw2/480/640'},
+  {id:3,collection:'professional',name:'Boardroom Silk Press',sub:'9 to 5 Professional',price:95000,img:'https://picsum.photos/seed/pw3/480/640'},
+  {id:4,collection:'professional',name:'Corporate Closure Queen',sub:'9 to 5 Professional',price:78000,img:'https://picsum.photos/seed/pw4/480/640'},
+  {id:5,collection:'professional',name:'Velvet Straight 180%',sub:'9 to 5 Professional',price:140000,img:'https://picsum.photos/seed/pw5/480/640'},
+  {id:6,collection:'professional',name:'Midnight Bob Lace',sub:'9 to 5 Professional',price:92000,img:'https://picsum.photos/seed/pw6/480/640'},
+  {id:7,collection:'student',name:'Campus Chic Curls',sub:'Students Collection',price:45000,img:'https://picsum.photos/seed/sw1/480/640'},
+  {id:8,collection:'student',name:'Study Hall Glam',sub:'Students Collection',price:55000,img:'https://picsum.photos/seed/sw2/480/640'},
+  {id:9,collection:'student',name:'Effortless Wave Unit',sub:'Students Collection',price:38000,img:'https://picsum.photos/seed/sw3/480/640'},
+  {id:10,collection:'student',name:'Weekend Kinks',sub:'Students Collection',price:32000,img:'https://picsum.photos/seed/sw4/480/640'},
+  {id:11,collection:'errand',name:'On-The-Go Ponytail',sub:'Errand & Gym',price:28000,img:'https://picsum.photos/seed/ew1/480/640'},
+  {id:12,collection:'errand',name:'Sweat-Proof Braid Unit',sub:'Errand & Gym',price:32000,img:'https://picsum.photos/seed/ew2/480/640'},
+  {id:13,collection:'errand',name:'Active Kinks & Coils',sub:'Errand & Gym',price:22000,img:'https://picsum.photos/seed/ew3/480/640'},
+  {id:14,collection:'errand',name:'Quick-Fix Twist Out',sub:'Errand & Gym',price:25000,img:'https://picsum.photos/seed/ew4/480/640'},
+  {id:15,collection:'raw',name:'Vietnamese Raw Bundle',sub:'Raw Hairs',price:150000,img:'https://picsum.photos/seed/rw1/480/640'},
+  {id:16,collection:'raw',name:'Cambodian Wavy Raw',sub:'Raw Hairs',price:175000,img:'https://picsum.photos/seed/rw2/480/640'},
+  {id:17,collection:'raw',name:'Burmese Straight Raw',sub:'Raw Hairs',price:160000,img:'https://picsum.photos/seed/rw3/480/640'},
+  {id:18,collection:'raw',name:'Indian Loose Deep',sub:'Raw Hairs',price:145000,img:'https://picsum.photos/seed/rw4/480/640'},
+];
+
+let cart = JSON.parse(localStorage.getItem('preshCart') || '[]');
+// Demo: add a sample item if cart is empty
+if(!cart.length){
+  cart=[{id:1,name:'Executive Sleek Bob',sub:'9 to 5 Professional',price:85000,img:'https://picsum.photos/seed/pw1/480/640',length:'14"',color:'Jet Black',qty:1}];
+  localStorage.setItem('preshCart', JSON.stringify(cart));
+}
+
+let promoApplied = false;
+let deliveryCost = 0;
+const PROMO_CODES = ['PRESH10','LUXE10','VIP10'];
+
+function saveCart(){ localStorage.setItem('preshCart', JSON.stringify(cart)); }
+function subtotal(){ return cart.reduce((s,i)=>s+i.price*i.qty,0); }
+function cartCount(){ return cart.reduce((s,i)=>s+i.qty,0); }
+function discount(){ return promoApplied ? Math.round(subtotal()*0.1) : 0; }
+function total(){ return subtotal() - discount() + deliveryCost; }
+
+function renderCart(){
+  const panel = document.getElementById('cartItemsPanel');
+  const empty = document.getElementById('emptyCart');
+  const count = cartCount();
+  document.getElementById('cartMeta').textContent = `${count} item${count!==1?'s':''}`;
+  document.getElementById('sumCount').textContent = count;
+  document.getElementById('sumSubtotal').textContent = '₦'+subtotal().toLocaleString();
+  document.getElementById('sumTotal').textContent = '₦'+total().toLocaleString();
+
+  if(promoApplied){
+    document.getElementById('discountLine').style.display='flex';
+    document.getElementById('sumDiscount').textContent = '-₦'+discount().toLocaleString();
+  }
+  document.getElementById('sumDelivery').textContent = deliveryCost ? '₦'+deliveryCost.toLocaleString() : (subtotal()>=50000?'Free':'₦2,500');
+
+  if(!cart.length){ empty.classList.add('show'); panel.innerHTML=''; renderAlsoLike(); return; }
+  empty.classList.remove('show');
+  panel.innerHTML = cart.map(item=>`
+    <div class="cart-item-card">
+      <div class="item-img-wrap"><img src="${item.img}" alt="${item.name}"/></div>
+      <div class="item-body">
+        <div class="item-top">
+          <div class="item-info">
+            <div class="item-coll">${item.sub}</div>
+            <div class="item-name">${item.name}</div>
+            <div class="item-meta">Length: ${item.length} &nbsp;·&nbsp; Colour: ${item.color}</div>
+          </div>
+          <button class="item-remove" onclick="removeItem(${item.id},'${item.length}','${item.color}')" title="Remove">✕</button>
+        </div>
+        <div class="item-bottom">
+          <div>
+            <div class="item-price">₦${(item.price*item.qty).toLocaleString()}</div>
+            <div class="item-price-unit">₦${item.price.toLocaleString()} each</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:1rem;">
+            <div class="qty-ctrl">
+              <button class="qty-btn" onclick="changeQty(${item.id},'${item.length}','${item.color}',-1)">−</button>
+              <span class="qty-val">${item.qty}</span>
+              <button class="qty-btn" onclick="changeQty(${item.id},'${item.length}','${item.color}',1)">+</button>
+            </div>
+            <button class="save-later" onclick="removeItem(${item.id},'${item.length}','${item.color}')">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  renderAlsoLike();
+}
+
+function renderAlsoLike(){
+  const inCartIds = cart.map(i=>i.id);
+  const suggestions = PRODUCTS.filter(p=>!inCartIds.includes(p.id)).sort(()=>Math.random()-0.5).slice(0,3);
+  document.getElementById('alsoGrid').innerHTML = suggestions.map(p=>`
+    <a class="also-card" href="product.html?id=${p.id}">
+      <div class="also-img"><img src="${p.img}" alt="${p.name}" loading="lazy"/></div>
+      <div class="also-name">${p.name}</div>
+      <div class="also-price">₦${p.price.toLocaleString()}</div>
+    </a>`).join('');
+}
+
+function removeItem(id,length,color){
+  cart = cart.filter(i=>!(i.id===id&&i.length===length&&i.color===color));
+  saveCart(); renderCart();
+}
+function changeQty(id,length,color,delta){
+  const item = cart.find(i=>i.id===id&&i.length===length&&i.color===color);
+  if(!item) return;
+  item.qty = Math.max(1,Math.min(10,item.qty+delta));
+  saveCart(); renderCart();
+}
+function applyPromo(){
+  const code = document.getElementById('promoInput').value.trim().toUpperCase();
+  if(PROMO_CODES.includes(code)){
+    promoApplied=true;
+    document.getElementById('promoSuccess').classList.add('show');
+    renderCart();
+  } else {
+    document.getElementById('promoInput').style.borderColor='red';
+    setTimeout(()=>document.getElementById('promoInput').style.borderColor='',1500);
+  }
+}
+function selectDelivery(input, cost, optId){
+  deliveryCost = cost;
+  document.querySelectorAll('.delivery-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById(optId).classList.add('selected');
+  renderCart();
+}
+function openCheckout(){
+  if(!cart.length){ alert('Your cart is empty!'); return; }
+  document.getElementById('checkoutOverlay').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeCheckout(){
+  document.getElementById('checkoutOverlay').classList.remove('open');
+  document.body.style.overflow='';
+}
+function placeOrder(){
+  const name=document.getElementById('fName').value;
+  const phone=document.getElementById('fPhone').value;
+  const address=document.getElementById('fAddress').value;
+  if(!name||!phone||!address){ alert('Please fill in your name, phone, and address.'); return; }
+  const ref='PH-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  document.getElementById('orderRef').textContent='Order #'+ref;
+  cart=[];
+  localStorage.removeItem('preshCart');
+  closeCheckout();
+  document.getElementById('successScreen').classList.add('show');
+}
+
+document.getElementById('promoInput').addEventListener('keydown',e=>{ if(e.key==='Enter') applyPromo(); });
+
+renderCart();
+</script>
+</body>
+</html>
