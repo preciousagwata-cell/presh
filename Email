@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRESH HAIRS — Email Notification System</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --coffee:#3B1F0E;--coffee-mid:#6B3A20;--coffee-light:#A0623A;
+  --ivory:#F5EFE6;--cream:#EDE4D5;--gold:#C9A84C;--gold-light:#E2C47A;
+  --dark:#1A0E07;--text-dark:#2C1A0E;--text-mid:#5C3D25;--white:#FDFAF6;
+  --green:#1a7a1a;--red:#c0392b;--blue:#1a4a8a;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:#f0ebe3;color:var(--text-dark);}
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:var(--cream);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:200;padding:1.1rem 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(250,246,240,0.97);backdrop-filter:blur(14px);box-shadow:0 2px 24px rgba(59,31,14,0.08);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;letter-spacing:0.18em;color:var(--coffee);text-decoration:none;}
+.nav-links{display:flex;gap:1.5rem;list-style:none;}
+.nav-links a{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-mid);text-decoration:none;transition:color 0.3s;}
+.nav-links a:hover{color:var(--coffee);}
+.nav-links a.active{color:var(--coffee);font-weight:600;}
+
+/* ── PAGE HERO ── */
+.page-hero{margin-top:64px;background:var(--dark);padding:3rem 5%;position:relative;overflow:hidden;}
+.page-hero::before{content:'EMAIL';position:absolute;right:-2%;top:-40%;font-family:'Cormorant Garamond',serif;font-size:14rem;font-weight:600;color:rgba(255,255,255,0.03);letter-spacing:0.1em;pointer-events:none;}
+.page-hero h1{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,3.5vw,2.8rem);font-weight:300;color:var(--white);margin-bottom:0.5rem;}
+.page-hero h1 em{font-style:italic;color:var(--gold-light);}
+.page-hero p{font-size:0.68rem;color:rgba(245,239,230,0.45);letter-spacing:0.1em;max-width:500px;line-height:1.8;}
+.hero-badges{display:flex;gap:0.8rem;margin-top:1.5rem;flex-wrap:wrap;}
+.hero-badge{padding:0.35rem 0.9rem;border:1px solid rgba(201,168,76,0.3);font-size:0.55rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold-light);}
+
+/* ── MAIN LAYOUT ── */
+.main-layout{display:grid;grid-template-columns:280px 1fr;gap:0;min-height:80vh;}
+
+/* ── LEFT SIDEBAR ── */
+.email-sidebar{background:var(--white);border-right:1px solid rgba(59,31,14,0.08);padding:1.5rem 0;position:sticky;top:64px;height:calc(100vh - 64px);overflow-y:auto;}
+.sidebar-section-label{font-size:0.5rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);padding:1rem 1.5rem 0.4rem;font-weight:600;}
+.email-nav-item{display:flex;align-items:center;gap:0.8rem;width:100%;padding:0.8rem 1.5rem;background:transparent;border:none;border-left:3px solid transparent;font-family:'Montserrat',sans-serif;font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:rgba(59,31,14,0.5);cursor:pointer;text-align:left;transition:all 0.25s;}
+.email-nav-item:hover{color:var(--coffee);background:rgba(245,239,230,0.5);}
+.email-nav-item.active{color:var(--coffee);background:rgba(201,168,76,0.08);border-left-color:var(--gold);font-weight:600;}
+.email-nav-icon{font-size:1rem;width:20px;text-align:center;flex-shrink:0;}
+.trigger-badge{margin-left:auto;font-size:0.48rem;padding:0.15rem 0.45rem;border-radius:10px;font-weight:700;}
+.trigger-badge.auto{background:rgba(26,122,26,0.12);color:var(--green);}
+.trigger-badge.manual{background:rgba(201,168,76,0.15);color:#7a5f00;}
+
+/* ── CONTENT AREA ── */
+.content-area{padding:2rem;}
+
+/* ── EMAIL PANEL ── */
+.email-panel{display:none;}
+.email-panel.active{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+/* CONFIG SIDE */
+.config-side{}
+.config-card{background:var(--white);padding:1.8rem;margin-bottom:1.2rem;}
+.config-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--coffee);margin-bottom:0.3rem;}
+.config-sub{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1.4rem;}
+
+.field-group{margin-bottom:1rem;}
+.field-label{display:block;font-size:0.57rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-mid);margin-bottom:0.4rem;}
+.field-input{width:100%;padding:0.8rem 1rem;border:1px solid rgba(59,31,14,0.15);background:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.73rem;color:var(--text-dark);outline:none;transition:border-color 0.25s;}
+.field-input:focus{border-color:var(--gold);}
+.field-textarea{width:100%;padding:0.8rem 1rem;border:1px solid rgba(59,31,14,0.15);background:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.72rem;color:var(--text-dark);outline:none;resize:vertical;min-height:80px;transition:border-color 0.25s;}
+.field-textarea:focus{border-color:var(--gold);}
+select.field-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A0623A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.8rem center;padding-right:2rem;}
+
+.trigger-info{display:flex;align-items:flex-start;gap:0.8rem;padding:1rem;background:rgba(26,122,26,0.06);border-left:3px solid var(--green);margin-bottom:1.2rem;}
+.trigger-info.manual-trigger{background:rgba(201,168,76,0.07);border-left-color:var(--gold);}
+.trigger-icon{font-size:1.2rem;flex-shrink:0;}
+.trigger-text p{font-size:0.65rem;color:var(--text-mid);line-height:1.6;}
+.trigger-text strong{color:var(--coffee);font-size:0.65rem;}
+
+.btn-send{width:100%;padding:1rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:0.7rem;margin-bottom:0.6rem;}
+.btn-send:hover{background:var(--coffee-mid);}
+.btn-send.sending{opacity:0.7;cursor:not-allowed;}
+.btn-preview{width:100%;padding:0.9rem;background:transparent;border:1px solid rgba(59,31,14,0.2);color:var(--coffee);font-family:'Montserrat',sans-serif;font-size:0.62rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;}
+.btn-preview:hover{background:var(--cream);}
+.send-spinner{width:14px;height:14px;border:2px solid rgba(245,239,230,0.3);border-top-color:var(--ivory);border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.send-log{margin-top:0.8rem;font-size:0.62rem;color:var(--green);letter-spacing:0.08em;display:none;}
+.send-log.show{display:block;}
+.send-log.error{color:var(--red);}
+
+/* STATS ROW */
+.email-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-bottom:1.2rem;border:1px solid rgba(59,31,14,0.08);background:var(--white);}
+.email-stat{padding:1rem;text-align:center;border-right:1px solid rgba(59,31,14,0.08);}
+.email-stat:last-child{border-right:none;}
+.email-stat-num{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--coffee);}
+.email-stat-label{font-size:0.5rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--text-mid);margin-top:0.2rem;}
+
+/* PREVIEW SIDE */
+.preview-side{}
+.preview-card{background:var(--white);padding:1rem;}
+.preview-toolbar{display:flex;align-items:center;justify-content:space-between;padding:0.8rem 1rem;background:var(--cream);border-bottom:1px solid rgba(59,31,14,0.08);margin:-1rem -1rem 1rem;}
+.preview-toolbar-title{font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mid);}
+.preview-device-btns{display:flex;gap:0.4rem;}
+.device-btn{padding:0.35rem 0.8rem;border:1px solid rgba(59,31,14,0.15);background:transparent;font-family:'Montserrat',sans-serif;font-size:0.5rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-mid);cursor:pointer;transition:all 0.25s;}
+.device-btn.active{background:var(--coffee);color:var(--ivory);border-color:var(--coffee);}
+.email-preview-frame{width:100%;border:none;background:var(--white);border:1px solid rgba(59,31,14,0.06);transition:width 0.3s;display:block;margin:0 auto;}
+
+/* LOGS TABLE */
+.logs-panel{display:none;}
+.logs-panel.active{display:block;}
+.logs-table{width:100%;border-collapse:collapse;background:var(--white);}
+.logs-table th{padding:0.8rem 1.2rem;font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--coffee-light);background:rgba(245,239,230,0.5);text-align:left;white-space:nowrap;}
+.logs-table td{padding:0.85rem 1.2rem;font-size:0.68rem;color:var(--text-mid);border-bottom:1px solid rgba(59,31,14,0.05);}
+.logs-table tr:hover td{background:rgba(245,239,230,0.4);}
+.log-badge{font-size:0.5rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.22rem 0.55rem;border-radius:2px;font-weight:600;}
+.log-badge.sent{background:rgba(26,122,26,0.1);color:var(--green);}
+.log-badge.failed{background:rgba(192,57,43,0.1);color:var(--red);}
+.log-badge.pending{background:rgba(201,168,76,0.15);color:#7a5f00;}
+
+/* SETTINGS PANEL */
+.settings-panel{display:none;}
+.settings-panel.active{display:block;}
+.settings-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+.settings-card{background:var(--white);padding:1.8rem;}
+.settings-card h4{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--coffee);margin-bottom:0.8rem;padding-bottom:0.6rem;border-bottom:1px solid rgba(59,31,14,0.08);}
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:0.7rem 0;border-bottom:1px solid rgba(59,31,14,0.05);}
+.toggle-row:last-child{border-bottom:none;}
+.toggle-row span{font-size:0.65rem;color:var(--text-mid);}
+.toggle{position:relative;cursor:pointer;}
+.toggle input{display:none;}
+.toggle-track{width:40px;height:22px;background:rgba(59,31,14,0.12);border-radius:11px;transition:background 0.3s;position:relative;}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:var(--white);transition:left 0.3s;box-shadow:0 1px 3px rgba(0,0,0,0.2);}
+.toggle input:checked+.toggle-track{background:var(--gold);}
+.toggle input:checked+.toggle-track .toggle-thumb{left:21px;}
+
+/* ── EMAIL HTML PREVIEW STYLES ── */
+.email-doc{font-family:'Georgia',serif;background:#f5f0e8;margin:0;padding:0;}
+.email-outer{max-width:600px;margin:0 auto;background:#fff;}
+.email-header-bar{background:#3B1F0E;padding:28px 40px;text-align:center;}
+.email-logo{font-family:'Georgia',serif;font-size:22px;font-weight:700;letter-spacing:6px;color:#FDFAF6;}
+.email-logo-sub{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-top:4px;}
+.email-hero-band{background:#C9A84C;height:3px;}
+.email-body{padding:40px;}
+.email-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-bottom:8px;}
+.email-h1{font-family:'Georgia',serif;font-size:26px;font-weight:400;color:#3B1F0E;margin-bottom:16px;line-height:1.2;}
+.email-h1 em{font-style:italic;color:#A0623A;}
+.email-p{font-size:13px;color:#5C3D25;line-height:1.8;margin-bottom:14px;font-family:'Arial',sans-serif;}
+.email-divider{height:1px;background:#EDE4D5;margin:24px 0;}
+.email-order-box{background:#F5EFE6;padding:20px;margin:20px 0;border-left:3px solid #C9A84C;}
+.email-order-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EDE4D5;font-size:12px;font-family:'Arial',sans-serif;}
+.email-order-row:last-child{border-bottom:none;font-weight:bold;color:#3B1F0E;}
+.email-order-label{color:#5C3D25;}
+.email-order-value{color:#3B1F0E;font-weight:600;}
+.email-item-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EDE4D5;}
+.email-item-row:last-child{border-bottom:none;}
+.email-item-img{width:54px;height:68px;object-fit:cover;}
+.email-item-name{font-size:13px;font-weight:600;color:#3B1F0E;font-family:'Arial',sans-serif;}
+.email-item-sub{font-size:11px;color:#5C3D25;font-family:'Arial',sans-serif;}
+.email-item-price{font-size:13px;font-weight:600;color:#3B1F0E;margin-left:auto;font-family:'Arial',sans-serif;white-space:nowrap;}
+.email-cta{display:block;text-align:center;background:#C9A84C;color:#1A0E07;padding:14px 32px;font-family:'Arial',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:600;margin:24px 0;}
+.email-cta-outline{display:block;text-align:center;border:1px solid #3B1F0E;color:#3B1F0E;padding:12px 32px;font-family:'Arial',sans-serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;margin:10px 0;}
+.email-address-box{background:#F5EFE6;padding:16px;border:1px solid #EDE4D5;font-family:'Arial',sans-serif;font-size:12px;color:#5C3D25;line-height:1.8;}
+.email-address-box strong{color:#3B1F0E;}
+.email-tracking{background:#3B1F0E;padding:20px;text-align:center;margin:20px 0;}
+.email-tracking-num{font-size:20px;font-family:'Georgia',serif;color:#C9A84C;letter-spacing:4px;}
+.email-tracking-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(245,239,230,0.5);margin-top:4px;font-family:'Arial',sans-serif;}
+.email-promo-box{background:linear-gradient(135deg,#3B1F0E,#6B3A20);padding:24px;text-align:center;margin:20px 0;}
+.email-promo-code{font-size:22px;font-family:'Georgia',serif;font-weight:700;color:#C9A84C;letter-spacing:8px;margin:8px 0;}
+.email-promo-text{font-size:11px;color:rgba(245,239,230,0.7);letter-spacing:2px;text-transform:uppercase;font-family:'Arial',sans-serif;}
+.email-products-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:20px 0;}
+.email-product-card{border:1px solid #EDE4D5;}
+.email-product-card img{width:100%;height:140px;object-fit:cover;}
+.email-product-info{padding:10px;}
+.email-product-name{font-size:12px;font-weight:600;color:#3B1F0E;font-family:'Arial',sans-serif;}
+.email-product-price{font-size:11px;color:#5C3D25;font-family:'Arial',sans-serif;}
+.email-footer{background:#1A0E07;padding:28px 40px;text-align:center;}
+.email-footer-logo{font-family:'Georgia',serif;font-size:14px;letter-spacing:5px;color:#FDFAF6;margin-bottom:8px;}
+.email-footer-tagline{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#C9A84C;margin-bottom:16px;font-family:'Arial',sans-serif;}
+.email-footer-links{font-size:10px;font-family:'Arial',sans-serif;}
+.email-footer-links a{color:rgba(245,239,230,0.4);text-decoration:none;margin:0 8px;}
+.email-unsubscribe{font-size:9px;color:rgba(245,239,230,0.25);margin-top:12px;font-family:'Arial',sans-serif;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--coffee);color:var(--ivory);padding:0.85rem 1.5rem;font-size:0.68rem;letter-spacing:0.08em;display:flex;align-items:center;gap:0.6rem;transform:translateY(60px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.4,0.64,1);max-width:320px;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-left-color:var(--green);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .main-layout{grid-template-columns:1fr;}
+  .email-sidebar{display:none;}
+  .email-panel.active,.logs-panel.active,.settings-panel.active{display:block;}
+  .settings-grid{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  .email-panel.active{grid-template-columns:1fr;}
+  .email-stats{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){.nav-links{display:none;}}
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="preshhairs.html">PRESH HAIRS</a>
+  <ul class="nav-links">
+    <li><a href="admin.html">Admin</a></li>
+    <li><a href="preshhairs.html">Storefront</a></li>
+    <li><a href="#" class="active">Email System</a></li>
+  </ul>
+  <a href="admin.html" style="font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--coffee-light);text-decoration:none;">← Back to Admin</a>
+</nav>
+
+<!-- HERO -->
+<div class="page-hero">
+  <h1>Email <em>Notification</em> System</h1>
+  <p>Manage, preview, and send all customer email notifications — order confirmations, shipping updates, promos, and more.</p>
+  <div class="hero-badges">
+    <span class="hero-badge">📧 7 Email Templates</span>
+    <span class="hero-badge">⚡ Auto-triggered</span>
+    <span class="hero-badge">📱 Mobile Optimised</span>
+    <span class="hero-badge">🔧 Customisable</span>
+  </div>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="email-sidebar">
+    <div class="sidebar-section-label">Transactional</div>
+    <button class="email-nav-item active" onclick="switchEmail('order-confirm',this)"><span class="email-nav-icon">✅</span> Order Confirmation <span class="trigger-badge auto">Auto</span></button>
+    <button class="email-nav-item" onclick="switchEmail('shipping',this)"><span class="email-nav-icon">🚚</span> Shipping Update <span class="trigger-badge auto">Auto</span></button>
+    <button class="email-nav-item" onclick="switchEmail('delivered',this)"><span class="email-nav-icon">📦</span> Order Delivered <span class="trigger-badge auto">Auto</span></button>
+    <button class="email-nav-item" onclick="switchEmail('welcome',this)"><span class="email-nav-icon">👋</span> Welcome Email <span class="trigger-badge auto">Auto</span></button>
+    <div class="sidebar-section-label">Marketing</div>
+    <button class="email-nav-item" onclick="switchEmail('promo',this)"><span class="email-nav-icon">🎁</span> Promo & Discount <span class="trigger-badge manual">Manual</span></button>
+    <button class="email-nav-item" onclick="switchEmail('new-arrivals',this)"><span class="email-nav-icon">✨</span> New Arrivals <span class="trigger-badge manual">Manual</span></button>
+    <button class="email-nav-item" onclick="switchEmail('abandoned',this)"><span class="email-nav-icon">🛒</span> Abandoned Cart <span class="trigger-badge auto">Auto</span></button>
+    <div class="sidebar-section-label">System</div>
+    <button class="email-nav-item" onclick="switchToLogs()"><span class="email-nav-icon">📋</span> Send Logs</button>
+    <button class="email-nav-item" onclick="switchToSettings()"><span class="email-nav-icon">⚙️</span> Settings</button>
+  </aside>
+
+  <!-- CONTENT -->
+  <div class="content-area">
+
+    <!-- ════ ORDER CONFIRMATION ════ -->
+    <div class="email-panel active" id="panel-order-confirm">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">142</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">98%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">100%</div><div class="email-stat-label">Delivered</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Order Confirmation</h3>
+          <p class="config-sub">Sent automatically after every successful payment</p>
+          <div class="trigger-info">
+            <span class="trigger-icon">⚡</span>
+            <div class="trigger-text"><strong>Auto Trigger:</strong><p>Fires immediately when checkout.html calls <code>onPaymentSuccess()</code>. No manual action needed.</p></div>
+          </div>
+          <div class="field-group"><label class="field-label">Customer Email</label><input class="field-input" id="oc-email" value="customer@example.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Customer Name</label><input class="field-input" id="oc-name" value="Adaeze Okafor"/></div>
+          <div class="field-group"><label class="field-label">Order Reference</label><input class="field-input" id="oc-ref" value="PH-A4X29K"/></div>
+          <div class="field-group"><label class="field-label">Order Total</label><input class="field-input" id="oc-total" value="₦85,000"/></div>
+          <div class="field-group"><label class="field-label">Delivery Address</label><input class="field-input" id="oc-address" value="14 Lekki Phase 1, Lagos"/></div>
+          <button class="btn-send" onclick="sendEmail('order-confirm')">
+            <span id="oc-btntext">Send Confirmation Email</span>
+            <div class="send-spinner" id="oc-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('order-confirm')">↺ Refresh Preview</button>
+          <p class="send-log" id="oc-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar">
+            <span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('order-confirm','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('order-confirm','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-order-confirm" style="height:620px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ SHIPPING UPDATE ════ -->
+    <div class="email-panel" id="panel-shipping">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">89</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">94%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">100%</div><div class="email-stat-label">Delivered</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Shipping Update</h3>
+          <p class="config-sub">Sent when order status changes to "Shipped" in the admin</p>
+          <div class="trigger-info"><span class="trigger-icon">⚡</span><div class="trigger-text"><strong>Auto Trigger:</strong><p>Fires from admin.html when order status is updated to "Shipped".</p></div></div>
+          <div class="field-group"><label class="field-label">Customer Email</label><input class="field-input" id="sh-email" value="customer@example.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Customer Name</label><input class="field-input" id="sh-name" value="Chiamaka Bello"/></div>
+          <div class="field-group"><label class="field-label">Order Reference</label><input class="field-input" id="sh-ref" value="PH-B7R12L"/></div>
+          <div class="field-group"><label class="field-label">Tracking Number</label><input class="field-input" id="sh-tracking" value="GIG-7789234-NG"/></div>
+          <div class="field-group"><label class="field-label">Estimated Delivery</label><input class="field-input" id="sh-eta" value="Friday, June 20, 2025"/></div>
+          <button class="btn-send" onclick="sendEmail('shipping')">
+            <span id="sh-btntext">Send Shipping Update</span>
+            <div class="send-spinner" id="sh-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('shipping')">↺ Refresh Preview</button>
+          <p class="send-log" id="sh-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('shipping','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('shipping','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-shipping" style="height:580px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ORDER DELIVERED ════ -->
+    <div class="email-panel" id="panel-delivered">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">67</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">91%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">100%</div><div class="email-stat-label">Delivered</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Order Delivered</h3>
+          <p class="config-sub">Sent when order is marked as Delivered in the admin</p>
+          <div class="trigger-info"><span class="trigger-icon">⚡</span><div class="trigger-text"><strong>Auto Trigger:</strong><p>Fires from admin.html when order status is updated to "Delivered".</p></div></div>
+          <div class="field-group"><label class="field-label">Customer Email</label><input class="field-input" id="dv-email" value="customer@example.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Customer Name</label><input class="field-input" id="dv-name" value="Temi Adeyemi"/></div>
+          <div class="field-group"><label class="field-label">Order Reference</label><input class="field-input" id="dv-ref" value="PH-C9M55T"/></div>
+          <div class="field-group"><label class="field-label">Product Name</label><input class="field-input" id="dv-product" value="Velvet Straight 180%"/></div>
+          <div class="field-group"><label class="field-label">Review Link</label><input class="field-input" id="dv-link" value="https://preshhairs.com/review"/></div>
+          <button class="btn-send" onclick="sendEmail('delivered')">
+            <span id="dv-btntext">Send Delivery Confirmation</span>
+            <div class="send-spinner" id="dv-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('delivered')">↺ Refresh Preview</button>
+          <p class="send-log" id="dv-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('delivered','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('delivered','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-delivered" style="height:600px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ WELCOME ════ -->
+    <div class="email-panel" id="panel-welcome">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">86</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">96%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">100%</div><div class="email-stat-label">Delivered</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Welcome Email</h3>
+          <p class="config-sub">Sent automatically when a new account is created</p>
+          <div class="trigger-info"><span class="trigger-icon">⚡</span><div class="trigger-text"><strong>Auto Trigger:</strong><p>Fires from account.html when <code>handleRegister()</code> succeeds.</p></div></div>
+          <div class="field-group"><label class="field-label">Customer Email</label><input class="field-input" id="wc-email" value="newmember@example.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">First Name</label><input class="field-input" id="wc-name" value="Funmilayo"/></div>
+          <div class="field-group"><label class="field-label">Welcome Promo Code</label><input class="field-input" id="wc-promo" value="WELCOME15"/></div>
+          <button class="btn-send" onclick="sendEmail('welcome')">
+            <span id="wc-btntext">Send Welcome Email</span>
+            <div class="send-spinner" id="wc-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('welcome')">↺ Refresh Preview</button>
+          <p class="send-log" id="wc-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('welcome','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('welcome','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-welcome" style="height:640px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ PROMO ════ -->
+    <div class="email-panel" id="panel-promo">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">312</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">72%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">28%</div><div class="email-stat-label">Click Rate</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Promo & Discount</h3>
+          <p class="config-sub">Send manually to your subscriber list</p>
+          <div class="trigger-info manual-trigger"><span class="trigger-icon">✍️</span><div class="trigger-text"><strong>Manual Send:</strong><p>Fill in the details and send to your full list or a segment.</p></div></div>
+          <div class="field-group"><label class="field-label">Send To</label>
+            <select class="field-input" id="pr-segment">
+              <option>All Subscribers (86)</option>
+              <option>Gold Members (12)</option>
+              <option>Inactive (30 days) (24)</option>
+              <option>Students Collection Buyers (18)</option>
+            </select>
+          </div>
+          <div class="field-group"><label class="field-label">Promo Code</label><input class="field-input" id="pr-code" value="PRESH20"/></div>
+          <div class="field-group"><label class="field-label">Discount Value</label><input class="field-input" id="pr-discount" value="20% OFF"/></div>
+          <div class="field-group"><label class="field-label">Expiry Date</label><input class="field-input" id="pr-expiry" value="30th June 2025" type="text"/></div>
+          <div class="field-group"><label class="field-label">Custom Message</label><textarea class="field-textarea" id="pr-msg">We've been thinking about you. Here's a little something from us — because luxury should never wait.</textarea></div>
+          <button class="btn-send" onclick="sendEmail('promo')">
+            <span id="pr-btntext">Send to All Subscribers</span>
+            <div class="send-spinner" id="pr-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('promo')">↺ Refresh Preview</button>
+          <p class="send-log" id="pr-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('promo','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('promo','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-promo" style="height:680px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ NEW ARRIVALS ════ -->
+    <div class="email-panel" id="panel-new-arrivals">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">4</div><div class="email-stat-label">Campaigns</div></div>
+          <div class="email-stat"><div class="email-stat-num">81%</div><div class="email-stat-label">Avg Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">34%</div><div class="email-stat-label">Click Rate</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">New Arrivals</h3>
+          <p class="config-sub">Announce new products to your subscribers</p>
+          <div class="trigger-info manual-trigger"><span class="trigger-icon">✍️</span><div class="trigger-text"><strong>Manual Send:</strong><p>Trigger when you add new products to the catalogue.</p></div></div>
+          <div class="field-group"><label class="field-label">Send To</label>
+            <select class="field-input">
+              <option>All Subscribers (86)</option>
+              <option>Wishlist Subscribers (31)</option>
+              <option>New Arrivals Opted-in (54)</option>
+            </select>
+          </div>
+          <div class="field-group"><label class="field-label">Collection Name</label><input class="field-input" id="na-collection" value="9 to 5 Professional"/></div>
+          <div class="field-group"><label class="field-label">Featured Product</label><input class="field-input" id="na-product" value="Power Lace Front"/></div>
+          <div class="field-group"><label class="field-label">Teaser Line</label><input class="field-input" id="na-teaser" value="Just landed. Already unforgettable."/></div>
+          <button class="btn-send" onclick="sendEmail('new-arrivals')">
+            <span id="na-btntext">Send New Arrivals Email</span>
+            <div class="send-spinner" id="na-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('new-arrivals')">↺ Refresh Preview</button>
+          <p class="send-log" id="na-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('new-arrivals','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('new-arrivals','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-new-arrivals" style="height:700px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ ABANDONED CART ════ -->
+    <div class="email-panel" id="panel-abandoned">
+      <div class="config-side">
+        <div class="email-stats">
+          <div class="email-stat"><div class="email-stat-num">38</div><div class="email-stat-label">Sent Total</div></div>
+          <div class="email-stat"><div class="email-stat-num">61%</div><div class="email-stat-label">Open Rate</div></div>
+          <div class="email-stat"><div class="email-stat-num">22%</div><div class="email-stat-label">Recovery Rate</div></div>
+        </div>
+        <div class="config-card">
+          <h3 class="config-title">Abandoned Cart</h3>
+          <p class="config-sub">Sent automatically 1 hour after a user leaves with items in cart</p>
+          <div class="trigger-info"><span class="trigger-icon">⚡</span><div class="trigger-text"><strong>Auto Trigger:</strong><p>Fires 1 hour after cart abandonment is detected (user has items but hasn't checked out).</p></div></div>
+          <div class="field-group"><label class="field-label">Customer Email</label><input class="field-input" id="ab-email" value="shopper@example.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Customer Name</label><input class="field-input" id="ab-name" value="Ngozi"/></div>
+          <div class="field-group"><label class="field-label">Cart Item</label><input class="field-input" id="ab-item" value="Executive Sleek Bob"/></div>
+          <div class="field-group"><label class="field-label">Cart Value</label><input class="field-input" id="ab-value" value="₦85,000"/></div>
+          <div class="field-group"><label class="field-label">Recovery Promo</label><input class="field-input" id="ab-promo" value="COMEBACK10"/></div>
+          <button class="btn-send" onclick="sendEmail('abandoned')">
+            <span id="ab-btntext">Send Recovery Email</span>
+            <div class="send-spinner" id="ab-spinner"></div>
+          </button>
+          <button class="btn-preview" onclick="refreshPreview('abandoned')">↺ Refresh Preview</button>
+          <p class="send-log" id="ab-log"></p>
+        </div>
+      </div>
+      <div class="preview-side">
+        <div class="preview-card">
+          <div class="preview-toolbar"><span class="preview-toolbar-title">Email Preview</span>
+            <div class="preview-device-btns">
+              <button class="device-btn active" onclick="setDevice('abandoned','desktop',this)">Desktop</button>
+              <button class="device-btn" onclick="setDevice('abandoned','mobile',this)">Mobile</button>
+            </div>
+          </div>
+          <iframe class="email-preview-frame" id="preview-abandoned" style="height:620px;" scrolling="yes"></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- ════ SEND LOGS ════ -->
+    <div class="logs-panel" id="panel-logs">
+      <div style="background:var(--white);margin-bottom:1.2rem;padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.8rem;">
+        <div>
+          <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--coffee);">Send Logs</h3>
+          <p style="font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);">All email activity</p>
+        </div>
+        <button onclick="clearLogs()" style="padding:0.6rem 1.2rem;background:transparent;border:1px solid rgba(192,57,43,0.3);color:var(--red);font-family:'Montserrat',sans-serif;font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;">Clear Logs</button>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="logs-table">
+          <thead><tr><th>#</th><th>Time</th><th>Type</th><th>Recipient</th><th>Subject</th><th>Status</th></tr></thead>
+          <tbody id="logsTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ════ SETTINGS ════ -->
+    <div class="settings-panel" id="panel-settings">
+      <div class="settings-grid">
+        <div class="settings-card">
+          <h4>Sender Configuration</h4>
+          <div class="field-group"><label class="field-label">From Name</label><input class="field-input" value="PRESH HAIRS"/></div>
+          <div class="field-group"><label class="field-label">From Email</label><input class="field-input" value="hello@preshhairs.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Reply-To Email</label><input class="field-input" value="support@preshhairs.com" type="email"/></div>
+          <div class="field-group"><label class="field-label">Email Footer Tagline</label><input class="field-input" value="luxury that lingers"/></div>
+          <button style="padding:0.8rem 1.8rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;cursor:pointer;" onclick="showToast('Sender settings saved ✓')">Save Settings</button>
+        </div>
+        <div class="settings-card">
+          <h4>Email Service Provider</h4>
+          <div class="field-group"><label class="field-label">Provider</label>
+            <select class="field-input">
+              <option>Mailgun</option>
+              <option>SendGrid</option>
+              <option>Resend</option>
+              <option>Amazon SES</option>
+              <option>Nodemailer (SMTP)</option>
+            </select>
+          </div>
+          <div class="field-group"><label class="field-label">API Key</label><input class="field-input" type="password" placeholder="••••••••••••••••••••"/></div>
+          <div class="field-group"><label class="field-label">Domain</label><input class="field-input" value="preshhairs.com"/></div>
+          <button style="padding:0.8rem 1.8rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;cursor:pointer;" onclick="showToast('API settings saved ✓')">Save & Test Connection</button>
+        </div>
+        <div class="settings-card">
+          <h4>Notification Toggles</h4>
+          <div class="toggle-row"><span>Order Confirmation</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>Shipping Update</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>Delivery Confirmation</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>Welcome Email</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>Abandoned Cart</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>Promo Emails</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+          <div class="toggle-row"><span>New Arrivals</span><label class="toggle"><input type="checkbox" checked/><div class="toggle-track"><div class="toggle-thumb"></div></div></label></div>
+        </div>
+        <div class="settings-card">
+          <h4>Auto-send Delays</h4>
+          <div class="field-group"><label class="field-label">Abandoned Cart Delay</label>
+            <select class="field-input"><option>1 hour</option><option>2 hours</option><option>6 hours</option><option>24 hours</option></select>
+          </div>
+          <div class="field-group"><label class="field-label">Delivery Confirmation Delay</label>
+            <select class="field-input"><option>Immediately</option><option>1 hour after delivery</option><option>24 hours after delivery</option></select>
+          </div>
+          <div class="field-group"><label class="field-label">Review Request Delay</label>
+            <select class="field-input"><option>3 days after delivery</option><option>7 days after delivery</option><option>14 days after delivery</option></select>
+          </div>
+          <button style="padding:0.8rem 1.8rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.6rem;letter-spacing:0.22em;text-transform:uppercase;cursor:pointer;" onclick="showToast('Delay settings saved ✓')">Save Delays</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-area -->
+</div><!-- /main-layout -->
+
+<script>
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let sendLogs = JSON.parse(localStorage.getItem('preshEmailLogs') || '[]');
+let activeEmail = 'order-confirm';
+let toastTimer;
+
+// ══════════════════════════════════════════
+// EMAIL HTML TEMPLATES
+// ══════════════════════════════════════════
+function getEmailHTML(type){
+  const base = (body) => `<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><style>
+    body{margin:0;padding:20px;background:#f5f0e8;font-family:Arial,sans-serif;}
+    .email-outer{max-width:600px;margin:0 auto;background:#fff;}
+    .email-header-bar{background:#3B1F0E;padding:28px 40px;text-align:center;}
+    .email-logo{font-family:Georgia,serif;font-size:22px;font-weight:700;letter-spacing:6px;color:#FDFAF6;margin:0;}
+    .email-logo-sub{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-top:4px;}
+    .email-hero-band{background:#C9A84C;height:3px;}
+    .email-body{padding:36px 40px;}
+    .email-eyebrow{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#C9A84C;margin-bottom:8px;}
+    .email-h1{font-family:Georgia,serif;font-size:24px;font-weight:400;color:#3B1F0E;margin-bottom:14px;line-height:1.2;}
+    .email-h1 em{font-style:italic;color:#A0623A;}
+    .email-p{font-size:13px;color:#5C3D25;line-height:1.8;margin-bottom:14px;}
+    .email-divider{height:1px;background:#EDE4D5;margin:22px 0;}
+    .email-order-box{background:#F5EFE6;padding:18px;margin:18px 0;border-left:3px solid #C9A84C;}
+    .email-order-row{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #EDE4D5;font-size:12px;}
+    .email-order-row:last-child{border-bottom:none;font-weight:bold;color:#3B1F0E;}
+    .email-order-label{color:#5C3D25;}
+    .email-order-value{color:#3B1F0E;font-weight:600;}
+    .email-item-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #EDE4D5;font-size:12px;}
+    .email-item-row:last-child{border-bottom:none;}
+    .email-item-img{width:54px;height:68px;object-fit:cover;flex-shrink:0;}
+    .email-item-name{font-size:13px;font-weight:600;color:#3B1F0E;}
+    .email-item-sub{font-size:11px;color:#5C3D25;margin-top:3px;}
+    .email-item-price{font-size:13px;font-weight:600;color:#3B1F0E;margin-left:auto;white-space:nowrap;}
+    .email-cta{display:block;text-align:center;background:#C9A84C;color:#1A0E07;padding:14px 32px;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:600;margin:22px 0;}
+    .email-cta-outline{display:block;text-align:center;border:1px solid #3B1F0E;color:#3B1F0E;padding:12px 32px;font-size:11px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;margin:10px 0;}
+    .email-address-box{background:#F5EFE6;padding:14px;border:1px solid #EDE4D5;font-size:12px;color:#5C3D25;line-height:1.8;}
+    .email-tracking{background:#3B1F0E;padding:20px;text-align:center;margin:18px 0;}
+    .email-tracking-num{font-size:20px;font-family:Georgia,serif;color:#C9A84C;letter-spacing:4px;}
+    .email-tracking-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(245,239,230,0.5);margin-top:4px;}
+    .email-promo-box{background:linear-gradient(135deg,#3B1F0E,#6B3A20);padding:24px;text-align:center;margin:18px 0;}
+    .email-promo-code{font-size:22px;font-family:Georgia,serif;font-weight:700;color:#C9A84C;letter-spacing:8px;margin:8px 0;}
+    .email-promo-text{font-size:11px;color:rgba(245,239,230,0.7);letter-spacing:2px;text-transform:uppercase;}
+    .email-products-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;}
+    .email-product-card{border:1px solid #EDE4D5;}
+    .email-product-card img{width:100%;height:130px;object-fit:cover;}
+    .email-product-info{padding:10px;}
+    .email-product-name{font-size:12px;font-weight:600;color:#3B1F0E;}
+    .email-product-price{font-size:11px;color:#5C3D25;}
+    .email-footer{background:#1A0E07;padding:24px 40px;text-align:center;}
+    .email-footer-logo{font-family:Georgia,serif;font-size:14px;letter-spacing:5px;color:#FDFAF6;margin-bottom:6px;}
+    .email-footer-tagline{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#C9A84C;margin-bottom:14px;}
+    .email-footer-links a{color:rgba(245,239,230,0.4);text-decoration:none;margin:0 8px;font-size:10px;}
+    .email-unsubscribe{font-size:9px;color:rgba(245,239,230,0.25);margin-top:10px;}
+    @media(max-width:480px){.email-body{padding:24px 20px!important;}.email-header-bar{padding:20px!important;}.email-footer{padding:20px!important;}.email-products-grid{grid-template-columns:1fr!important;}}
+  </style></head><body>${body}</body></html>`;
+
+  const footer = `<div class="email-footer">
+    <div class="email-footer-logo">PRESH HAIRS</div>
+    <div class="email-footer-tagline">luxury that lingers</div>
+    <div class="email-footer-links"><a href="#">Unsubscribe</a> · <a href="#">Privacy</a> · <a href="#">Contact</a></div>
+    <div class="email-unsubscribe">© 2025 PRESH HAIRS · Lagos, Nigeria · hello@preshhairs.com</div>
+  </div>`;
+
+  const header = `<div class="email-outer"><div class="email-header-bar"><p class="email-logo">PRESH HAIRS</p><p class="email-logo-sub">Luxury Wigs & Perfumes</p></div><div class="email-hero-band"></div>`;
+
+  if(type === 'order-confirm'){
+    const name=v('oc-name')||'Valued Customer', ref=v('oc-ref')||'PH-XXXXXX', total=v('oc-total')||'₦0', addr=v('oc-address')||'—';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">Order Confirmed</p>
+      <h1 class="email-h1">Thank you, <em>${name.split(' ')[0]}</em>.<br/>Your order is confirmed.</h1>
+      <p class="email-p">We've received your order and our team is already preparing your luxurious pieces with the care and attention they deserve.</p>
+      <div class="email-order-box">
+        <div class="email-order-row"><span class="email-order-label">Order Reference</span><span class="email-order-value">${ref}</span></div>
+        <div class="email-order-row"><span class="email-order-label">Delivery Address</span><span class="email-order-value">${addr}</span></div>
+        <div class="email-order-row"><span class="email-order-label">Est. Delivery</span><span class="email-order-value">2–5 Business Days</span></div>
+        <div class="email-order-row"><span class="email-order-label">Total Paid</span><span class="email-order-value">${total}</span></div>
+      </div>
+      <div class="email-item-row">
+        <img class="email-item-img" src="https://picsum.photos/seed/pw1/480/640" alt="Wig"/>
+        <div><div class="email-item-name">Executive Sleek Bob</div><div class="email-item-sub">14" · Jet Black · Qty 1</div></div>
+        <div class="email-item-price">${total}</div>
+      </div>
+      <div class="email-divider"></div>
+      <a class="email-cta" href="#">Track Your Order</a>
+      <p class="email-p" style="font-size:11px;text-align:center;color:#A0623A;">Questions? Reply to this email or WhatsApp us at +234 800 000 0000</p>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'shipping'){
+    const name=v('sh-name')||'Valued Customer', ref=v('sh-ref')||'PH-XXXXXX', tracking=v('sh-tracking')||'—', eta=v('sh-eta')||'—';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">Your Order is On Its Way</p>
+      <h1 class="email-h1">It's <em>shipped,</em><br/>${name.split(' ')[0]}!</h1>
+      <p class="email-p">Great news — your PRESH HAIRS order is on its way to you. Here are your shipping details:</p>
+      <div class="email-tracking">
+        <div class="email-tracking-label">Tracking Number</div>
+        <div class="email-tracking-num">${tracking}</div>
+      </div>
+      <div class="email-order-box">
+        <div class="email-order-row"><span class="email-order-label">Order Reference</span><span class="email-order-value">${ref}</span></div>
+        <div class="email-order-row"><span class="email-order-label">Carrier</span><span class="email-order-value">GIG Logistics</span></div>
+        <div class="email-order-row"><span class="email-order-label">Estimated Delivery</span><span class="email-order-value">${eta}</span></div>
+      </div>
+      <a class="email-cta" href="#">Track Package Live</a>
+      <p class="email-p" style="font-size:11px;text-align:center;color:#A0623A;">If you have any questions, we're always here for you.</p>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'delivered'){
+    const name=v('dv-name')||'Valued Customer', ref=v('dv-ref')||'PH-XXXXXX', product=v('dv-product')||'your wig';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">Order Delivered 🎉</p>
+      <h1 class="email-h1">Your order has<br/>arrived, <em>${name.split(' ')[0]}</em>!</h1>
+      <p class="email-p">We hope you're absolutely in love with your <strong>${product}</strong>. Your beauty, your power — delivered.</p>
+      <div class="email-order-box">
+        <div class="email-order-row"><span class="email-order-label">Order</span><span class="email-order-value">${ref}</span></div>
+        <div class="email-order-row"><span class="email-order-label">Status</span><span class="email-order-value" style="color:#1a7a1a;">✓ Delivered</span></div>
+      </div>
+      <div class="email-divider"></div>
+      <p class="email-eyebrow">How was your experience?</p>
+      <p class="email-p">Your feedback means the world to us. Leave a review and help other queens make their choice.</p>
+      <a class="email-cta" href="#">Leave a Review ★★★★★</a>
+      <a class="email-cta-outline" href="#">Shop Again</a>
+      <div class="email-promo-box">
+        <div class="email-promo-text">Thank You Discount</div>
+        <div class="email-promo-code">THANKYOU10</div>
+        <div class="email-promo-text">10% off your next order · Valid 14 days</div>
+      </div>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'welcome'){
+    const name=v('wc-name')||'Beautiful', promo=v('wc-promo')||'WELCOME15';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">Welcome to the Family</p>
+      <h1 class="email-h1">Hello, <em>${name}</em>.<br/>We've been expecting you.</h1>
+      <p class="email-p">Welcome to PRESH HAIRS — where luxury is not a privilege, it's a standard. You are now part of an exclusive community of women who refuse to compromise on beauty.</p>
+      <div class="email-divider"></div>
+      <p class="email-eyebrow">Your Welcome Gift</p>
+      <div class="email-promo-box">
+        <div class="email-promo-text">Use this code on your first order</div>
+        <div class="email-promo-code">${promo}</div>
+        <div class="email-promo-text">Valid for 30 days · Minimum order ₦30,000</div>
+      </div>
+      <div class="email-products-grid">
+        <div class="email-product-card"><img src="https://picsum.photos/seed/pw1/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">Executive Sleek Bob</div><div class="email-product-price">₦85,000</div></div></div>
+        <div class="email-product-card"><img src="https://picsum.photos/seed/perf1/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">Presh Noir Absolue</div><div class="email-product-price">₦65,000</div></div></div>
+      </div>
+      <a class="email-cta" href="#">Start Shopping →</a>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'promo'){
+    const code=v('pr-code')||'PRESH20', discount=v('pr-discount')||'20% OFF', expiry=v('pr-expiry')||'—', msg=v('pr-msg')||'';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">Exclusive Offer</p>
+      <h1 class="email-h1">A <em>luxury gift</em><br/>just for you.</h1>
+      <p class="email-p">${msg}</p>
+      <div class="email-promo-box">
+        <div class="email-promo-text">${discount} — Use at checkout</div>
+        <div class="email-promo-code">${code}</div>
+        <div class="email-promo-text">Expires ${expiry}</div>
+      </div>
+      <div class="email-products-grid">
+        <div class="email-product-card"><img src="https://picsum.photos/seed/pw5/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">Velvet Straight 180%</div><div class="email-product-price">₦140,000</div></div></div>
+        <div class="email-product-card"><img src="https://picsum.photos/seed/rw1/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">Vietnamese Raw Bundle</div><div class="email-product-price">₦150,000</div></div></div>
+      </div>
+      <a class="email-cta" href="#">Shop Now — ${discount}</a>
+      <p class="email-p" style="font-size:11px;text-align:center;color:#A0623A;">Offer valid for a limited time only. Cannot be combined with other discounts.</p>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'new-arrivals'){
+    const col=v('na-collection')||'Collection', product=v('na-product')||'New Product', teaser=v('na-teaser')||'Just dropped.';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">New Arrivals · ${col}</p>
+      <h1 class="email-h1">${teaser.split(' ').slice(0,3).join(' ')}<br/><em>${teaser.split(' ').slice(3).join(' ')||'Unforgettable.'}</em></h1>
+      <p class="email-p">The ${col} just got bigger. Introducing our newest addition — <strong>${product}</strong> — crafted for the woman who commands every room she walks into.</p>
+      <div class="email-products-grid">
+        <div class="email-product-card"><img src="https://picsum.photos/seed/pw2/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">${product}</div><div class="email-product-price">From ₦95,000</div></div></div>
+        <div class="email-product-card"><img src="https://picsum.photos/seed/pw3/480/640" alt=""/><div class="email-product-info"><div class="email-product-name">Boardroom Silk Press</div><div class="email-product-price">₦95,000</div></div></div>
+      </div>
+      <a class="email-cta" href="#">Shop ${col}</a>
+      <div class="email-divider"></div>
+      <p class="email-p" style="font-size:11px;text-align:center;">Free delivery on orders above ₦50,000 · Easy 7-day returns</p>
+    </div>${footer}</div>`);
+  }
+
+  if(type === 'abandoned'){
+    const name=v('ab-name')||'there', item=v('ab-item')||'your saved item', val=v('ab-value')||'₦0', promo=v('ab-promo')||'COMEBACK10';
+    return base(`${header}<div class="email-body">
+      <p class="email-eyebrow">You Left Something Behind</p>
+      <h1 class="email-h1">Hey ${name},<br/>your cart <em>misses you.</em></h1>
+      <p class="email-p">You left <strong>${item}</strong> in your cart. It's still waiting — and so are we.</p>
+      <div class="email-item-row">
+        <img class="email-item-img" src="https://picsum.photos/seed/pw1/480/640" alt="${item}"/>
+        <div><div class="email-item-name">${item}</div><div class="email-item-sub">In your cart · Ready to ship</div></div>
+        <div class="email-item-price">${val}</div>
+      </div>
+      <div class="email-promo-box">
+        <div class="email-promo-text">Complete your order and save</div>
+        <div class="email-promo-code">${promo}</div>
+        <div class="email-promo-text">10% off · Expires in 24 hours</div>
+      </div>
+      <a class="email-cta" href="#">Return to Cart →</a>
+      <p class="email-p" style="font-size:11px;text-align:center;color:#A0623A;">Stock is limited. Don't let someone else take your piece.</p>
+    </div>${footer}</div>`);
+  }
+
+  return base(`<p>Template not found.</p>`);
+}
+
+function v(id){ const el=document.getElementById(id); return el?el.value:''; }
+
+// ══════════════════════════════════════════
+// PREVIEW
+// ══════════════════════════════════════════
+function renderPreview(type){
+  const frame = document.getElementById('preview-'+type);
+  if(!frame) return;
+  const doc = frame.contentDocument || frame.contentWindow.document;
+  doc.open(); doc.write(getEmailHTML(type)); doc.close();
+}
+function refreshPreview(type){ renderPreview(type); showToast('Preview refreshed'); }
+function setDevice(type, device, btn){
+  btn.closest('.preview-device-btns').querySelectorAll('.device-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const frame = document.getElementById('preview-'+type);
+  if(frame) frame.style.maxWidth = device==='mobile' ? '375px' : '100%';
+}
+
+// ══════════════════════════════════════════
+// PANEL SWITCHING
+// ══════════════════════════════════════════
+function switchEmail(type, btn){
+  document.querySelectorAll('.email-panel,.logs-panel,.settings-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.email-nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+type).classList.add('active');
+  if(btn) btn.classList.add('active');
+  activeEmail = type;
+  setTimeout(()=>renderPreview(type), 80);
+}
+function switchToLogs(){
+  document.querySelectorAll('.email-panel,.logs-panel,.settings-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.email-nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-logs').classList.add('active');
+  renderLogs();
+}
+function switchToSettings(){
+  document.querySelectorAll('.email-panel,.logs-panel,.settings-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.email-nav-item').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-settings').classList.add('active');
+}
+
+// ══════════════════════════════════════════
+// SEND EMAIL (SIMULATED)
+// ══════════════════════════════════════════
+const emailMeta = {
+  'order-confirm': {prefix:'oc', subject:'Your PRESH HAIRS Order is Confirmed ✓', emailField:'oc-email'},
+  'shipping':      {prefix:'sh', subject:'Your Order Has Shipped 🚚', emailField:'sh-email'},
+  'delivered':     {prefix:'dv', subject:'Your PRESH HAIRS Order Has Been Delivered 📦', emailField:'dv-email'},
+  'welcome':       {prefix:'wc', subject:'Welcome to PRESH HAIRS — Your Gift Inside 🎁', emailField:'wc-email'},
+  'promo':         {prefix:'pr', subject:'An Exclusive Offer — Just For You ✨', emailField:null},
+  'new-arrivals':  {prefix:'na', subject:'New Arrivals Just Dropped at PRESH HAIRS ✦', emailField:null},
+  'abandoned':     {prefix:'ab', subject:'Hey — You Left Something Behind 🛒', emailField:'ab-email'},
+};
+const emailTypeLabels = {
+  'order-confirm':'Order Confirmation','shipping':'Shipping Update','delivered':'Order Delivered',
+  'welcome':'Welcome Email','promo':'Promo Email','new-arrivals':'New Arrivals','abandoned':'Abandoned Cart'
+};
+
+function sendEmail(type){
+  const meta = emailMeta[type];
+  if(!meta) return;
+  const {prefix, subject, emailField} = meta;
+  const recipient = emailField ? (document.getElementById(emailField)?.value || 'subscribers') : 'All Subscribers';
+  const btn = document.getElementById(prefix+'-btntext');
+  const spinner = document.getElementById(prefix+'-spinner');
+  const log = document.getElementById(prefix+'-log');
+
+  btn.textContent = 'Sending…';
+  if(spinner) spinner.style.display='inline-block';
+  log.classList.remove('show','error');
+
+  // Simulate network delay
+  setTimeout(()=>{
+    const success = Math.random() > 0.05; // 95% success rate simulation
+    btn.textContent = success ? '✓ Email Sent!' : '✕ Send Failed';
+    if(spinner) spinner.style.display='none';
+
+    if(success){
+      log.textContent = `✓ Sent to ${recipient} at ${new Date().toLocaleTimeString()}`;
+      log.className = 'send-log show';
+      showToast(`Email sent to ${recipient} ✓`, 'success');
+      addLog(emailTypeLabels[type], recipient, subject, 'sent');
+    } else {
+      log.textContent = `✕ Failed — check your email service settings`;
+      log.className = 'send-log show error';
+      showToast('Send failed — check settings', 'error');
+      addLog(emailTypeLabels[type], recipient, subject, 'failed');
+    }
+
+    setTimeout(()=>{
+      btn.textContent = btn.textContent.includes('✓') ? `Re-send ${emailTypeLabels[type]}` : `Retry ${emailTypeLabels[type]}`;
+    }, 3000);
+  }, 1400);
+}
+
+// ══════════════════════════════════════════
+// LOGS
+// ══════════════════════════════════════════
+function addLog(type, recipient, subject, status){
+  sendLogs.unshift({
+    id: sendLogs.length+1,
+    time: new Date().toLocaleString('en-GB',{hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'}),
+    type, recipient, subject, status
+  });
+  localStorage.setItem('preshEmailLogs', JSON.stringify(sendLogs));
+}
+function renderLogs(){
+  if(!sendLogs.length){
+    document.getElementById('logsTableBody').innerHTML=`<tr><td colspan="6" style="text-align:center;padding:3rem;color:var(--text-mid);font-size:0.7rem;">No emails sent yet. Send your first email to see logs here.</td></tr>`;
+    return;
+  }
+  document.getElementById('logsTableBody').innerHTML = sendLogs.map((l,i)=>`
+    <tr>
+      <td style="color:var(--coffee-light);">#${String(l.id).padStart(3,'0')}</td>
+      <td>${l.time}</td>
+      <td style="font-weight:600;color:var(--coffee);">${l.type}</td>
+      <td>${l.recipient}</td>
+      <td style="color:var(--text-dark);">${l.subject}</td>
+      <td><span class="log-badge ${l.status}">${l.status}</span></td>
+    </tr>`).join('');
+}
+function clearLogs(){
+  if(!confirm('Clear all send logs?')) return;
+  sendLogs=[];
+  localStorage.removeItem('preshEmailLogs');
+  renderLogs();
+  showToast('Logs cleared');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+function showToast(msg, type=''){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),3500);
+}
+
+// ══════════════════════════════════════════
+// INIT — load default preview
+// ══════════════════════════════════════════
+window.addEventListener('load',()=>{ renderPreview('order-confirm'); });
+</script>
+</body>
+</html>
