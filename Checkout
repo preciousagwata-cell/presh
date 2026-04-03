@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PRESH HAIRS — Checkout</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<!-- Paystack JS SDK -->
+<script src="https://js.paystack.co/v1/inline.js"></script>
+<style>
+:root{
+  --coffee:#3B1F0E;--coffee-mid:#6B3A20;--coffee-light:#A0623A;
+  --ivory:#F5EFE6;--cream:#EDE4D5;--gold:#C9A84C;--gold-light:#E2C47A;
+  --dark:#1A0E07;--text-dark:#2C1A0E;--text-mid:#5C3D25;--white:#FDFAF6;
+  --green:#1a7a1a;--red:#c0392b;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:var(--ivory);color:var(--text-dark);}
+::-webkit-scrollbar{width:5px;} ::-webkit-scrollbar-track{background:var(--cream);} ::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:1.1rem 5%;display:flex;align-items:center;justify-content:space-between;background:rgba(250,246,240,0.97);backdrop-filter:blur(12px);box-shadow:0 2px 20px rgba(59,31,14,0.08);}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;letter-spacing:0.18em;color:var(--coffee);text-decoration:none;}
+.nav-back{font-size:0.62rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--coffee-light);text-decoration:none;display:flex;align-items:center;gap:0.5rem;transition:color 0.3s;}
+.nav-back:hover{color:var(--coffee);}
+.nav-secure{display:flex;align-items:center;gap:0.4rem;font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--green);}
+
+/* ── PROGRESS BAR ── */
+.progress-bar{margin-top:64px;background:var(--white);border-bottom:1px solid rgba(59,31,14,0.08);padding:0 5%;}
+.progress-steps{display:flex;align-items:stretch;max-width:900px;margin:0 auto;}
+.progress-step{flex:1;display:flex;align-items:center;gap:0.7rem;padding:1rem 0;position:relative;cursor:pointer;}
+.progress-step:not(:last-child)::after{content:'›';position:absolute;right:0;color:rgba(59,31,14,0.2);font-size:1rem;}
+.step-circle{width:26px;height:26px;border-radius:50%;border:1.5px solid rgba(59,31,14,0.2);display:flex;align-items:center;justify-content:center;font-size:0.6rem;font-weight:600;color:rgba(59,31,14,0.35);flex-shrink:0;transition:all 0.3s;}
+.step-label{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:rgba(59,31,14,0.35);transition:color 0.3s;}
+.progress-step.active .step-circle{background:var(--coffee);border-color:var(--coffee);color:var(--ivory);}
+.progress-step.active .step-label{color:var(--coffee);font-weight:600;}
+.progress-step.done .step-circle{background:var(--green);border-color:var(--green);color:#fff;}
+.progress-step.done .step-label{color:var(--green);}
+
+/* ── LAYOUT ── */
+.checkout-layout{display:grid;grid-template-columns:1fr 380px;gap:2.5rem;padding:2.5rem 5%;max-width:1200px;margin:0 auto;}
+
+/* ── FORM PANELS ── */
+.form-panel{display:none;}
+.form-panel.active{display:block;}
+
+.panel-card{background:var(--white);padding:2rem;margin-bottom:1.5rem;}
+.panel-card-title{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--coffee);margin-bottom:0.3rem;}
+.panel-card-sub{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;}
+
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.form-group{margin-bottom:1.1rem;position:relative;}
+.form-label{display:block;font-size:0.57rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mid);margin-bottom:0.4rem;}
+.form-input{width:100%;padding:0.9rem 1rem;border:1.5px solid rgba(59,31,14,0.15);background:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.75rem;color:var(--text-dark);outline:none;transition:border-color 0.25s,box-shadow 0.25s;}
+.form-input:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(201,168,76,0.12);}
+.form-input.has-error{border-color:var(--red);}
+.form-input.valid{border-color:var(--green);}
+.form-error-msg{font-size:0.57rem;color:var(--red);margin-top:0.3rem;display:none;}
+.form-error-msg.show{display:block;}
+.valid-tick{position:absolute;right:0.8rem;bottom:0.95rem;color:var(--green);font-size:0.8rem;display:none;}
+.valid-tick.show{display:block;}
+select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23A0623A'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.9rem center;padding-right:2.2rem;}
+
+/* ── DELIVERY OPTIONS ── */
+.delivery-opts{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1rem;}
+.delivery-opt{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;border:1.5px solid rgba(59,31,14,0.12);cursor:pointer;transition:all 0.25s;background:var(--white);}
+.delivery-opt.selected{border-color:var(--gold);background:rgba(201,168,76,0.04);}
+.delivery-opt input[type=radio]{accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;}
+.delivery-opt-info{flex:1;}
+.delivery-name{font-size:0.68rem;font-weight:600;color:var(--coffee);}
+.delivery-desc{font-size:0.6rem;color:var(--text-mid);margin-top:0.2rem;}
+.delivery-price{font-size:0.75rem;font-weight:600;color:var(--coffee);white-space:nowrap;}
+
+/* ── PAYMENT METHOD ── */
+.payment-methods{display:flex;flex-direction:column;gap:0.6rem;margin-bottom:1.5rem;}
+.pay-method{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;border:1.5px solid rgba(59,31,14,0.12);cursor:pointer;transition:all 0.25s;}
+.pay-method.selected{border-color:var(--gold);background:rgba(201,168,76,0.04);}
+.pay-method input[type=radio]{accent-color:var(--gold);width:16px;height:16px;flex-shrink:0;}
+.pay-method-icon{font-size:1.3rem;width:32px;text-align:center;}
+.pay-method-info{flex:1;}
+.pay-method-name{font-size:0.68rem;font-weight:600;color:var(--coffee);}
+.pay-method-desc{font-size:0.58rem;color:var(--text-mid);margin-top:0.1rem;}
+.pay-badge{font-size:0.48rem;letter-spacing:0.15em;text-transform:uppercase;padding:0.2rem 0.5rem;background:rgba(26,122,26,0.1);color:var(--green);border-radius:2px;margin-left:0.5rem;}
+
+/* Card input section */
+.card-details{background:var(--ivory);padding:1.2rem;margin-top:0.5rem;display:none;}
+.card-details.show{display:block;}
+.card-row{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+.card-input-wrap{position:relative;}
+.card-icons{position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);display:flex;gap:0.3rem;font-size:0.7rem;}
+
+/* ── NAVIGATION BTNS ── */
+.step-nav{display:flex;gap:1rem;margin-top:1rem;}
+.btn-next{flex:1;padding:1.1rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.28em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:0.7rem;}
+.btn-next:hover{background:var(--coffee-mid);}
+.btn-next:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-prev{padding:1.1rem 1.8rem;background:transparent;border:1px solid rgba(59,31,14,0.2);color:var(--coffee);font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;}
+.btn-prev:hover{background:var(--cream);}
+
+/* PAY NOW */
+.btn-pay{width:100%;padding:1.2rem;background:var(--gold);color:var(--dark);border:none;font-family:'Montserrat',sans-serif;font-size:0.7rem;letter-spacing:0.3em;text-transform:uppercase;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:0.8rem;position:relative;overflow:hidden;}
+.btn-pay::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent);transition:left 0.5s;}
+.btn-pay:hover{background:var(--gold-light);transform:translateY(-1px);box-shadow:0 8px 25px rgba(201,168,76,0.35);}
+.btn-pay:hover::before{left:100%;}
+.btn-pay:disabled{opacity:0.6;cursor:not-allowed;transform:none;box-shadow:none;}
+.btn-pay-spinner{width:16px;height:16px;border:2px solid rgba(26,14,7,0.3);border-top-color:var(--dark);border-radius:50%;animation:spin 0.7s linear infinite;display:none;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── ORDER REVIEW TABLE ── */
+.review-items{display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.2rem;}
+.review-item{display:flex;align-items:center;gap:1rem;padding:0.8rem;background:var(--ivory);}
+.review-item-img{width:52px;height:66px;object-fit:cover;flex-shrink:0;}
+.review-item-info{flex:1;}
+.review-item-name{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--coffee);}
+.review-item-sub{font-size:0.58rem;color:var(--text-mid);letter-spacing:0.06em;}
+.review-item-price{font-size:0.82rem;font-weight:600;color:var(--coffee);white-space:nowrap;}
+
+.review-address-box{background:var(--ivory);padding:1rem 1.2rem;border-left:3px solid var(--gold);margin-bottom:1rem;}
+.review-address-label{font-size:0.55rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.4rem;}
+.review-address-text{font-size:0.72rem;color:var(--text-dark);line-height:1.7;}
+
+/* ── ORDER SIDEBAR ── */
+.order-sidebar{position:sticky;top:90px;height:fit-content;}
+.sidebar-card{background:var(--white);padding:1.8rem;margin-bottom:1rem;}
+.sidebar-title{font-family:'Cormorant Garamond',serif;font-size:1.2rem;color:var(--coffee);margin-bottom:1.2rem;padding-bottom:0.8rem;border-bottom:1px solid rgba(59,31,14,0.08);}
+.sidebar-item{display:flex;align-items:center;gap:0.8rem;padding:0.7rem 0;border-bottom:1px solid rgba(59,31,14,0.05);}
+.sidebar-item:last-child{border-bottom:none;}
+.sidebar-item-img{width:44px;height:56px;object-fit:cover;border:1px solid rgba(59,31,14,0.08);flex-shrink:0;}
+.sidebar-item-name{font-size:0.68rem;font-weight:600;color:var(--coffee);flex:1;}
+.sidebar-item-sub{font-size:0.55rem;color:var(--text-mid);}
+.sidebar-item-price{font-size:0.75rem;font-weight:600;color:var(--coffee);white-space:nowrap;}
+.sidebar-item-qty{font-size:0.55rem;color:var(--text-mid);white-space:nowrap;}
+
+.summary-line{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.7rem;}
+.summary-line span{font-size:0.68rem;color:var(--text-mid);}
+.summary-line strong{font-size:0.72rem;color:var(--coffee);font-weight:600;}
+.summary-line.discount strong{color:var(--green);}
+.summary-divider{height:1px;background:rgba(59,31,14,0.08);margin:1rem 0;}
+.summary-total{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.3rem;}
+.summary-total span{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-mid);}
+.summary-total strong{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--coffee);}
+.summary-vat{font-size:0.55rem;color:rgba(92,61,37,0.4);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:1.2rem;}
+
+/* Secure badges */
+.secure-row{display:flex;align-items:center;gap:0.6rem;justify-content:center;padding:1rem;border:1px solid rgba(59,31,14,0.08);background:var(--ivory);}
+.secure-item{display:flex;align-items:center;gap:0.3rem;font-size:0.52rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-mid);}
+.secure-divider{width:1px;height:20px;background:rgba(59,31,14,0.1);}
+
+/* Paystack logo */
+.paystack-badge{display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-top:0.8rem;font-size:0.55rem;color:rgba(92,61,37,0.4);letter-spacing:0.1em;text-transform:uppercase;}
+.paystack-logo{background:#00C3F7;color:#fff;font-size:0.55rem;font-weight:700;padding:0.15rem 0.4rem;border-radius:2px;letter-spacing:0.05em;}
+
+/* ── SUCCESS SCREEN ── */
+.success-screen{position:fixed;inset:0;background:var(--ivory);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem;opacity:0;pointer-events:none;transition:opacity 0.5s;}
+.success-screen.show{opacity:1;pointer-events:all;}
+.success-icon{width:80px;height:80px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:2rem;color:#fff;margin:0 auto 1.5rem;transform:scale(0);transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1);}
+.success-screen.show .success-icon{transform:scale(1);}
+.success-screen h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);color:var(--coffee);margin-bottom:0.5rem;}
+.success-ref{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--gold);margin:1rem 0;}
+.success-screen p{font-size:0.72rem;color:var(--text-mid);max-width:440px;line-height:1.9;margin-bottom:2rem;}
+.success-details{background:var(--white);padding:1.5rem 2rem;max-width:440px;width:100%;margin-bottom:2rem;text-align:left;}
+.success-detail-row{display:flex;justify-content:space-between;padding:0.5rem 0;border-bottom:1px solid rgba(59,31,14,0.06);font-size:0.68rem;}
+.success-detail-row:last-child{border-bottom:none;}
+.success-detail-row span{color:var(--text-mid);}
+.success-detail-row strong{color:var(--coffee);}
+.success-btns{display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;}
+.btn-success-primary{padding:1rem 2.2rem;background:var(--coffee);color:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.25em;text-transform:uppercase;text-decoration:none;transition:background 0.3s;}
+.btn-success-primary:hover{background:var(--coffee-mid);}
+.btn-success-secondary{padding:1rem 2.2rem;background:transparent;border:1px solid rgba(59,31,14,0.25);color:var(--coffee);font-family:'Montserrat',sans-serif;font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;text-decoration:none;transition:all 0.3s;}
+.btn-success-secondary:hover{background:var(--cream);}
+
+/* ── FAILED SCREEN ── */
+.failed-screen{position:fixed;inset:0;background:var(--ivory);z-index:500;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:3rem;opacity:0;pointer-events:none;transition:opacity 0.4s;}
+.failed-screen.show{opacity:1;pointer-events:all;}
+.failed-icon{font-size:3rem;margin-bottom:1.2rem;}
+.failed-screen h2{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--coffee);margin-bottom:0.5rem;}
+.failed-screen p{font-size:0.72rem;color:var(--text-mid);max-width:380px;line-height:1.8;margin-bottom:2rem;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;background:var(--coffee);color:var(--ivory);padding:0.9rem 1.5rem;font-size:0.68rem;letter-spacing:0.08em;display:flex;align-items:center;gap:0.7rem;transform:translateY(60px);opacity:0;transition:all 0.4s cubic-bezier(0.34,1.4,0.64,1);max-width:320px;border-left:3px solid var(--gold);}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.error{border-left-color:var(--red);background:#4a1010;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .checkout-layout{grid-template-columns:1fr;}
+  .order-sidebar{position:static;}
+}
+@media(max-width:600px){
+  .form-row{grid-template-columns:1fr;}
+  .card-row{grid-template-columns:1fr;}
+  .progress-step .step-label{display:none;}
+  .step-nav{flex-direction:column-reverse;}
+  .btn-prev{width:100%;}
+  .success-btns{flex-direction:column;}
+  nav .nav-secure{display:none;}
+}
+</style>
+</head>
+<body>
+
+<!-- SUCCESS SCREEN -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon">✓</div>
+  <h2>Payment Successful!</h2>
+  <div class="success-ref" id="successRef">Order #PH-000000</div>
+  <div class="success-details">
+    <div class="success-detail-row"><span>Payment Method</span><strong id="sPayMethod">—</strong></div>
+    <div class="success-detail-row"><span>Amount Paid</span><strong id="sAmount">—</strong></div>
+    <div class="success-detail-row"><span>Delivery To</span><strong id="sAddress">—</strong></div>
+    <div class="success-detail-row"><span>Est. Delivery</span><strong>2–5 Business Days</strong></div>
+  </div>
+  <p>Thank you for your order! A confirmation has been sent to your email. Our team will contact you shortly with tracking details.</p>
+  <div class="success-btns">
+    <a href="preshhairs.html" class="btn-success-primary">Continue Shopping</a>
+    <a href="account.html" class="btn-success-secondary">View My Orders</a>
+  </div>
+</div>
+
+<!-- FAILED SCREEN -->
+<div class="failed-screen" id="failedScreen">
+  <div class="failed-icon">⚠️</div>
+  <h2>Payment Failed</h2>
+  <p>Your payment could not be processed. No charge was made. Please try again or use a different payment method.</p>
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;justify-content:center;">
+    <button class="btn-success-primary" onclick="retryPayment()" style="border:none;cursor:pointer;">Try Again</button>
+    <a href="cart.html" class="btn-success-secondary">Back to Cart</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-logo" href="preshhairs.html">PRESH HAIRS</a>
+  <div class="nav-secure">🔒 Secure Checkout</div>
+  <a href="cart.html" class="nav-back">← Back to Cart</a>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar">
+  <div class="progress-steps">
+    <div class="progress-step done" id="ps-1"><div class="step-circle">✓</div><span class="step-label">Cart</span></div>
+    <div class="progress-step active" id="ps-2"><div class="step-circle">2</div><span class="step-label">Details</span></div>
+    <div class="progress-step" id="ps-3"><div class="step-circle">3</div><span class="step-label">Delivery</span></div>
+    <div class="progress-step" id="ps-4"><div class="step-circle">4</div><span class="step-label">Review</span></div>
+    <div class="progress-step" id="ps-5"><div class="step-circle">5</div><span class="step-label">Payment</span></div>
+  </div>
+</div>
+
+<!-- CHECKOUT LAYOUT -->
+<div class="checkout-layout">
+
+  <!-- LEFT: FORM STEPS -->
+  <div>
+
+    <!-- ── STEP 1: CONTACT & DELIVERY ── -->
+    <div class="form-panel active" id="step-1">
+
+      <div class="panel-card">
+        <h2 class="panel-card-title">Contact Information</h2>
+        <p class="panel-card-sub">How we'll reach you about your order</p>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">First Name *</label>
+            <input class="form-input" id="fFirst" placeholder="Adaeze" oninput="liveValidate(this,'name')"/>
+            <div class="valid-tick" id="tick-fFirst">✓</div>
+            <p class="form-error-msg" id="err-fFirst">Please enter your first name</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Last Name *</label>
+            <input class="form-input" id="fLast" placeholder="Okafor" oninput="liveValidate(this,'name')"/>
+            <div class="valid-tick" id="tick-fLast">✓</div>
+            <p class="form-error-msg" id="err-fLast">Please enter your last name</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email Address *</label>
+          <input class="form-input" id="fEmail" type="email" placeholder="you@example.com" oninput="liveValidate(this,'email')"/>
+          <div class="valid-tick" id="tick-fEmail">✓</div>
+          <p class="form-error-msg" id="err-fEmail">Please enter a valid email address</p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Phone Number *</label>
+          <input class="form-input" id="fPhone" type="tel" placeholder="08012345678" oninput="liveValidate(this,'phone')"/>
+          <div class="valid-tick" id="tick-fPhone">✓</div>
+          <p class="form-error-msg" id="err-fPhone">Please enter a valid Nigerian phone number</p>
+        </div>
+      </div>
+
+      <div class="panel-card">
+        <h2 class="panel-card-title">Delivery Address</h2>
+        <p class="panel-card-sub">Where should we send your order?</p>
+        <div class="form-group">
+          <label class="form-label">Street Address *</label>
+          <input class="form-input" id="fStreet" placeholder="14 Lekki Phase 1, Close 5" oninput="liveValidate(this,'text')"/>
+          <div class="valid-tick" id="tick-fStreet">✓</div>
+          <p class="form-error-msg" id="err-fStreet">Please enter your street address</p>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">City *</label>
+            <input class="form-input" id="fCity" placeholder="Lagos" oninput="liveValidate(this,'text')"/>
+            <div class="valid-tick" id="tick-fCity">✓</div>
+            <p class="form-error-msg" id="err-fCity">Required</p>
+          </div>
+          <div class="form-group">
+            <label class="form-label">State *</label>
+            <select class="form-input" id="fState" onchange="liveValidate(this,'select')">
+              <option value="">Select state…</option>
+              <option>Lagos</option><option>Abuja (FCT)</option><option>Rivers</option>
+              <option>Kano</option><option>Oyo</option><option>Anambra</option>
+              <option>Delta</option><option>Enugu</option><option>Ogun</option>
+              <option>Edo</option><option>Imo</option><option>Cross River</option>
+              <option>Akwa Ibom</option><option>Kwara</option><option>Osun</option>
+              <option>Ondo</option><option>Ekiti</option><option>Abia</option>
+              <option>Bayelsa</option><option>Ebonyi</option><option>Plateau</option>
+              <option>Niger</option><option>Kaduna</option><option>Benue</option>
+              <option>Nasarawa</option><option>Kebbi</option><option>Sokoto</option>
+              <option>Zamfara</option><option>Katsina</option><option>Jigawa</option>
+              <option>Gombe</option><option>Bauchi</option><option>Yobe</option>
+              <option>Borno</option><option>Adamawa</option><option>Taraba</option>
+            </select>
+            <div class="valid-tick" id="tick-fState">✓</div>
+            <p class="form-error-msg" id="err-fState">Please select a state</p>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Order Notes <span style="color:var(--text-mid);font-size:0.52rem;">(optional)</span></label>
+          <input class="form-input" id="fNotes" placeholder="Any special instructions, landmarks, or requests…"/>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-next" onclick="goToStep(2)">Continue to Delivery →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 2: DELIVERY METHOD ── -->
+    <div class="form-panel" id="step-2">
+      <div class="panel-card">
+        <h2 class="panel-card-title">Delivery Method</h2>
+        <p class="panel-card-sub">Choose how you'd like to receive your order</p>
+        <div class="delivery-opts">
+          <label class="delivery-opt selected" id="dopt-standard" onclick="selectDelivery(0,'dopt-standard','Standard Delivery')">
+            <input type="radio" name="delivery" value="0" checked/>
+            <div class="delivery-opt-info">
+              <div class="delivery-name">Standard Delivery <span style="font-size:0.55rem;color:var(--green);font-weight:400;">FREE on orders ≥ ₦50,000</span></div>
+              <div class="delivery-desc">2–5 business days · Nationwide</div>
+            </div>
+            <div class="delivery-price" id="deliveryStandardPrice">Free</div>
+          </label>
+          <label class="delivery-opt" id="dopt-express" onclick="selectDelivery(5000,'dopt-express','Express Delivery')">
+            <input type="radio" name="delivery" value="5000"/>
+            <div class="delivery-opt-info">
+              <div class="delivery-name">Express Delivery</div>
+              <div class="delivery-desc">Same day in Lagos · Order before 12:00pm</div>
+            </div>
+            <div class="delivery-price">₦5,000</div>
+          </label>
+          <label class="delivery-opt" id="dopt-pickup" onclick="selectDelivery(0,'dopt-pickup','Store Pickup')">
+            <input type="radio" name="delivery" value="0"/>
+            <div class="delivery-opt-info">
+              <div class="delivery-name">Store Pickup</div>
+              <div class="delivery-desc">Pick up at our showroom · Lagos Island</div>
+            </div>
+            <div class="delivery-price">Free</div>
+          </label>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goToStep(1)">← Back</button>
+        <button class="btn-next" onclick="goToStep(3)">Continue to Review →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 3: REVIEW ORDER ── -->
+    <div class="form-panel" id="step-3">
+      <div class="panel-card">
+        <h2 class="panel-card-title">Review Your Order</h2>
+        <p class="panel-card-sub">Please confirm everything looks correct</p>
+        <div class="review-items" id="reviewItems"></div>
+        <div class="review-address-box">
+          <div class="review-address-label">Delivering to</div>
+          <div class="review-address-text" id="reviewAddress">—</div>
+        </div>
+        <div class="review-address-box" style="border-left-color:var(--coffee-light);">
+          <div class="review-address-label" style="color:var(--coffee-light);">Delivery Method</div>
+          <div class="review-address-text" id="reviewDelivery">Standard Delivery</div>
+        </div>
+      </div>
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goToStep(2)">← Back</button>
+        <button class="btn-next" onclick="goToStep(4)">Continue to Payment →</button>
+      </div>
+    </div>
+
+    <!-- ── STEP 4: PAYMENT ── -->
+    <div class="form-panel" id="step-4">
+      <div class="panel-card">
+        <h2 class="panel-card-title">Payment Method</h2>
+        <p class="panel-card-sub">Choose how you'd like to pay</p>
+
+        <div class="payment-methods">
+          <!-- Paystack Card/Bank -->
+          <label class="pay-method selected" id="pm-paystack" onclick="selectPayMethod('paystack','pm-paystack')">
+            <input type="radio" name="paymethod" value="paystack" checked/>
+            <div class="pay-method-icon">💳</div>
+            <div class="pay-method-info">
+              <div class="pay-method-name">Card, Bank Transfer & USSD <span class="pay-badge">Recommended</span></div>
+              <div class="pay-method-desc">Visa, Mastercard, Verve · Powered by Paystack</div>
+            </div>
+          </label>
+
+          <!-- Pay on Delivery -->
+          <label class="pay-method" id="pm-pod" onclick="selectPayMethod('pod','pm-pod')">
+            <input type="radio" name="paymethod" value="pod"/>
+            <div class="pay-method-icon">🚚</div>
+            <div class="pay-method-info">
+              <div class="pay-method-name">Pay on Delivery</div>
+              <div class="pay-method-desc">Cash or POS at your doorstep · Lagos & Abuja only</div>
+            </div>
+          </label>
+
+          <!-- Bank Transfer -->
+          <label class="pay-method" id="pm-transfer" onclick="selectPayMethod('transfer','pm-transfer')">
+            <input type="radio" name="paymethod" value="transfer"/>
+            <div class="pay-method-icon">🏦</div>
+            <div class="pay-method-info">
+              <div class="pay-method-name">Direct Bank Transfer</div>
+              <div class="pay-method-desc">Transfer to our account · Order confirmed after verification</div>
+            </div>
+          </label>
+        </div>
+
+        <!-- Bank Transfer Details (shown when selected) -->
+        <div id="bankTransferDetails" style="display:none;background:var(--ivory);padding:1.2rem;margin-bottom:1rem;border-left:3px solid var(--gold);">
+          <p style="font-size:0.6rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;">Transfer Details</p>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;">
+            <div><p style="font-size:0.55rem;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.2rem;">Bank</p><p style="font-size:0.78rem;font-weight:600;color:var(--coffee);">Zenith Bank</p></div>
+            <div><p style="font-size:0.55rem;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.2rem;">Account Number</p><p style="font-size:0.78rem;font-weight:600;color:var(--coffee);">2012345678</p></div>
+            <div><p style="font-size:0.55rem;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.2rem;">Account Name</p><p style="font-size:0.78rem;font-weight:600;color:var(--coffee);">Presh Hairs Ltd</p></div>
+            <div><p style="font-size:0.55rem;color:var(--text-mid);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:0.2rem;">Reference</p><p style="font-size:0.78rem;font-weight:600;color:var(--coffee);" id="bankRef">—</p></div>
+          </div>
+          <p style="font-size:0.6rem;color:var(--text-mid);margin-top:0.8rem;line-height:1.6;">After transfer, send your receipt to <strong>orders@preshhairs.com</strong> or WhatsApp <strong>+234 800 000 0000</strong>. Orders are confirmed within 2 hours.</p>
+        </div>
+
+        <!-- POD notice -->
+        <div id="podDetails" style="display:none;background:var(--ivory);padding:1.2rem;margin-bottom:1rem;border-left:3px solid var(--coffee-light);">
+          <p style="font-size:0.68rem;color:var(--text-mid);line-height:1.7;">Pay with <strong>cash or POS</strong> when your order arrives. Available in Lagos and Abuja only. A ₦2,000 booking fee is required to confirm your order.</p>
+        </div>
+
+        <!-- Paystack security note -->
+        <div id="paystackNote" style="display:flex;align-items:center;gap:0.5rem;padding:0.8rem;background:rgba(0,195,247,0.05);border:1px solid rgba(0,195,247,0.2);">
+          <span style="font-size:1rem;">🔒</span>
+          <p style="font-size:0.6rem;color:var(--text-mid);line-height:1.5;">Your payment is <strong>encrypted and secure</strong>. Card details are processed directly by Paystack and never stored on our servers. Paystack is PCI-DSS compliant.</p>
+        </div>
+      </div>
+
+      <div class="step-nav">
+        <button class="btn-prev" onclick="goToStep(3)">← Back</button>
+        <button class="btn-next" onclick="initiatePayment()" id="payBtn">
+          <span id="payBtnText">Pay Now →</span>
+          <div class="btn-pay-spinner" id="paySpinner"></div>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT: ORDER SIDEBAR -->
+  <div class="order-sidebar">
+    <div class="sidebar-card">
+      <h3 class="sidebar-title">Order Summary</h3>
+      <div id="sidebarItems"></div>
+      <div class="summary-divider"></div>
+      <div class="summary-line"><span>Subtotal</span><strong id="sSubtotal">₦0</strong></div>
+      <div class="summary-line discount" id="sDiscountRow" style="display:none;"><span>Promo (10%)</span><strong id="sDiscount">-₦0</strong></div>
+      <div class="summary-line"><span>Delivery</span><strong id="sDelivery">Free</strong></div>
+      <div class="summary-divider"></div>
+      <div class="summary-total"><span>Total</span><strong id="sTotal">₦0</strong></div>
+      <p class="summary-vat">VAT inclusive · NGN</p>
+    </div>
+
+    <div class="sidebar-card" style="padding:1rem;">
+      <div class="secure-row">
+        <div class="secure-item">🔒 SSL Secure</div>
+        <div class="secure-divider"></div>
+        <div class="secure-item">✦ Authentic</div>
+        <div class="secure-divider"></div>
+        <div class="secure-item">🚚 Tracked</div>
+      </div>
+      <div class="paystack-badge">
+        Payments secured by <span class="paystack-logo">Paystack</span>
+      </div>
+    </div>
+
+    <!-- PROMO IN SIDEBAR -->
+    <div class="sidebar-card" style="padding:1.2rem;">
+      <p style="font-size:0.58rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:0.8rem;">Promo Code</p>
+      <div style="display:flex;gap:0;border:1px solid rgba(59,31,14,0.15);overflow:hidden;">
+        <input style="flex:1;padding:0.75rem;border:none;outline:none;background:var(--ivory);font-family:'Montserrat',sans-serif;font-size:0.7rem;color:var(--text-dark);" placeholder="PRESH10" id="promoCode"/>
+        <button style="padding:0.75rem 1rem;background:var(--coffee);color:var(--ivory);border:none;font-family:'Montserrat',sans-serif;font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;cursor:pointer;" onclick="applyPromo()">Apply</button>
+      </div>
+      <p style="font-size:0.58rem;color:var(--green);margin-top:0.5rem;display:none;" id="promoMsg">✓ 10% discount applied!</p>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// CONFIG — Replace with your real Paystack public key
+// ══════════════════════════════════════════
+const PAYSTACK_PUBLIC_KEY = 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
+// To go live: replace with pk_live_... from your Paystack dashboard
+
+// ══════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════
+let cart = JSON.parse(localStorage.getItem('preshCart') || '[]');
+let promoApplied = false;
+let deliveryCost = 0;
+let selectedDeliveryLabel = 'Standard Delivery';
+let selectedPayMethod = 'paystack';
+let currentStep = 1;
+const PROMO_CODES = ['PRESH10','LUXE10','VIP10'];
+
+// Demo cart if empty
+if (!cart.length) {
+  cart = [
+    {id:1,name:'Executive Sleek Bob',sub:'9 to 5 Professional',price:85000,img:'https://picsum.photos/seed/pw1/480/640',length:'14"',color:'Jet Black',qty:1},
+    {id:16,name:'Cambodian Wavy Raw',sub:'Raw Hairs',price:175000,img:'https://picsum.photos/seed/rw2/480/640',length:'16"',color:'Jet Black',qty:1}
+  ];
+}
+
+// ══════════════════════════════════════════
+// TOTALS
+// ══════════════════════════════════════════
+function subtotal(){ return cart.reduce((s,i)=>s+i.price*i.qty, 0); }
+function discountAmt(){ return promoApplied ? Math.round(subtotal()*0.1) : 0; }
+function deliveryFee(){
+  if(deliveryCost > 0) return deliveryCost;
+  return subtotal() >= 50000 ? 0 : 2500;
+}
+function grandTotal(){ return subtotal() - discountAmt() + deliveryFee(); }
+
+// ══════════════════════════════════════════
+// RENDER SIDEBAR
+// ══════════════════════════════════════════
+function renderSidebar(){
+  document.getElementById('sidebarItems').innerHTML = cart.map(i=>`
+    <div class="sidebar-item">
+      <img class="sidebar-item-img" src="${i.img}" alt="${i.name}"/>
+      <div style="flex:1;">
+        <div class="sidebar-item-name">${i.name}</div>
+        <div class="sidebar-item-sub">${i.length} · ${i.color}</div>
+        <div class="sidebar-item-qty">Qty: ${i.qty}</div>
+      </div>
+      <div class="sidebar-item-price">₦${(i.price*i.qty).toLocaleString()}</div>
+    </div>`).join('');
+
+  const fee = deliveryFee();
+  document.getElementById('sSubtotal').textContent = '₦'+subtotal().toLocaleString();
+  document.getElementById('sDelivery').textContent = fee === 0 ? 'Free' : '₦'+fee.toLocaleString();
+  document.getElementById('sTotal').textContent = '₦'+grandTotal().toLocaleString();
+
+  if(promoApplied){
+    document.getElementById('sDiscountRow').style.display='flex';
+    document.getElementById('sDiscount').textContent = '-₦'+discountAmt().toLocaleString();
+  }
+
+  // Update standard delivery price label
+  const stdFee = subtotal() >= 50000 ? 'Free' : '₦2,500';
+  const el = document.getElementById('deliveryStandardPrice');
+  if(el) el.textContent = stdFee;
+
+  // Update pay button text with amount
+  document.getElementById('payBtnText').textContent = `Pay ₦${grandTotal().toLocaleString()} →`;
+
+  // Set bank ref
+  const ref = 'PH-'+Math.random().toString(36).substr(2,6).toUpperCase();
+  const bankRefEl = document.getElementById('bankRef');
+  if(bankRefEl && bankRefEl.textContent === '—') bankRefEl.textContent = ref;
+}
+
+// ══════════════════════════════════════════
+// STEP NAVIGATION
+// ══════════════════════════════════════════
+function goToStep(n){
+  if(n > currentStep){
+    // Validate before advancing
+    if(currentStep === 1 && !validateStep1()) return;
+  }
+
+  // Hide current, show next
+  document.getElementById(`step-${currentStep}`).classList.remove('active');
+  document.getElementById(`step-${n}`).classList.add('active');
+
+  // Update progress bar
+  for(let i=1;i<=5;i++){
+    const ps = document.getElementById(`ps-${i}`);
+    ps.classList.remove('active','done');
+    if(i < n+1) ps.classList.add('done');
+    if(i === n+1) ps.classList.add('active');
+  }
+
+  currentStep = n;
+
+  // Step-specific actions
+  if(n === 3) buildReview();
+  if(n === 4) renderSidebar();
+
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// ══════════════════════════════════════════
+// VALIDATION
+// ══════════════════════════════════════════
+function validateStep1(){
+  let ok = true;
+  const checks = [
+    {id:'fFirst', type:'name'},
+    {id:'fLast', type:'name'},
+    {id:'fEmail', type:'email'},
+    {id:'fPhone', type:'phone'},
+    {id:'fStreet', type:'text'},
+    {id:'fCity', type:'text'},
+    {id:'fState', type:'select'},
+  ];
+  checks.forEach(c=>{
+    const el = document.getElementById(c.id);
+    if(!validateField(el, c.type)){
+      showFieldError(c.id, true);
+      ok = false;
+    }
+  });
+  if(!ok) showToast('Please fill in all required fields','error');
+  return ok;
+}
+
+function validateField(el, type){
+  const v = el.value.trim();
+  if(!v) return false;
+  if(type==='email') return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+  if(type==='phone') return /^(\+234|0)[789][01]\d{8}$/.test(v.replace(/\s/g,''));
+  if(type==='select') return v !== '';
+  return v.length >= 2;
+}
+
+function liveValidate(el, type){
+  const valid = validateField(el, type);
+  el.classList.toggle('valid', valid);
+  el.classList.toggle('has-error', !valid && el.value.trim().length > 0);
+  const tick = document.getElementById('tick-'+el.id);
+  if(tick) tick.classList.toggle('show', valid);
+  if(valid) showFieldError(el.id, false);
+}
+
+function showFieldError(id, show){
+  const el = document.getElementById(id);
+  const err = document.getElementById('err-'+id);
+  if(el) el.classList.toggle('has-error', show);
+  if(err) err.classList.toggle('show', show);
+}
+
+// ══════════════════════════════════════════
+// DELIVERY
+// ══════════════════════════════════════════
+function selectDelivery(cost, optId, label){
+  deliveryCost = cost;
+  selectedDeliveryLabel = label;
+  document.querySelectorAll('.delivery-opt').forEach(o=>o.classList.remove('selected'));
+  document.getElementById(optId).classList.add('selected');
+  renderSidebar();
+}
+
+// ══════════════════════════════════════════
+// PAYMENT METHOD
+// ══════════════════════════════════════════
+function selectPayMethod(method, elemId){
+  selectedPayMethod = method;
+  document.querySelectorAll('.pay-method').forEach(m=>m.classList.remove('selected'));
+  document.getElementById(elemId).classList.add('selected');
+
+  document.getElementById('bankTransferDetails').style.display = method==='transfer' ? 'block' : 'none';
+  document.getElementById('podDetails').style.display = method==='pod' ? 'block' : 'none';
+  document.getElementById('paystackNote').style.display = method==='paystack' ? 'flex' : 'none';
+
+  const payBtn = document.getElementById('payBtnText');
+  if(method==='paystack') payBtn.textContent = `Pay ₦${grandTotal().toLocaleString()} →`;
+  else if(method==='pod') payBtn.textContent = 'Confirm Order (Pay on Delivery)';
+  else if(method==='transfer') payBtn.textContent = 'Confirm & Get Transfer Details';
+}
+
+// ══════════════════════════════════════════
+// REVIEW STEP
+// ══════════════════════════════════════════
+function buildReview(){
+  document.getElementById('reviewItems').innerHTML = cart.map(i=>`
+    <div class="review-item">
+      <img class="review-item-img" src="${i.img}" alt="${i.name}"/>
+      <div class="review-item-info">
+        <div class="review-item-name">${i.name}</div>
+        <div class="review-item-sub">${i.sub} · ${i.length} · ${i.color} · Qty ${i.qty}</div>
+      </div>
+      <div class="review-item-price">₦${(i.price*i.qty).toLocaleString()}</div>
+    </div>`).join('');
+
+  const first = document.getElementById('fFirst').value;
+  const last = document.getElementById('fLast').value;
+  const street = document.getElementById('fStreet').value;
+  const city = document.getElementById('fCity').value;
+  const state = document.getElementById('fState').value;
+
+  document.getElementById('reviewAddress').innerHTML =
+    `<strong>${first} ${last}</strong><br/>${street}, ${city}, ${state}`;
+  document.getElementById('reviewDelivery').textContent = selectedDeliveryLabel;
+}
+
+// ══════════════════════════════════════════
+// PROMO
+// ══════════════════════════════════════════
+function applyPromo(){
+  const code = document.getElementById('promoCode').value.trim().toUpperCase();
+  const msg = document.getElementById('promoMsg');
+  if(PROMO_CODES.includes(code)){
+    promoApplied = true;
+    msg.style.display = 'block';
+    renderSidebar();
+    showToast('Promo code applied — 10% off!');
+  } else {
+    msg.style.display = 'none';
+    showToast('Invalid promo code','error');
+  }
+}
+
+// ══════════════════════════════════════════
+// PAYMENT INITIATION
+// ══════════════════════════════════════════
+function initiatePayment(){
+  const btn = document.getElementById('payBtn');
+  const spinner = document.getElementById('paySpinner');
+  const btnText = document.getElementById('payBtnText');
+
+  if(selectedPayMethod === 'paystack'){
+    launchPaystack(btn, spinner, btnText);
+  } else if(selectedPayMethod === 'pod'){
+    confirmPODOrder();
+  } else if(selectedPayMethod === 'transfer'){
+    confirmTransferOrder();
+  }
+}
+
+// ── PAYSTACK PAYMENT ──
+function launchPaystack(btn, spinner, btnText){
+  const email = document.getElementById('fEmail').value.trim();
+  const first = document.getElementById('fFirst').value.trim();
+  const last = document.getElementById('fLast').value.trim();
+  const phone = document.getElementById('fPhone').value.trim();
+  const amountKobo = grandTotal() * 100; // Paystack uses kobo
+  const ref = 'PH-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+
+  // Show loading state
+  btn.disabled = true;
+  btnText.textContent = 'Processing…';
+  spinner.style.display = 'block';
+
+  // Check if Paystack SDK loaded
+  if(typeof PaystackPop === 'undefined'){
+    // SDK not loaded — demo mode
+    btn.disabled = false;
+    btnText.textContent = `Pay ₦${grandTotal().toLocaleString()} →`;
+    spinner.style.display = 'none';
+    simulatePaystack(ref, email, first, last, phone);
+    return;
+  }
+
+  const handler = PaystackPop.setup({
+    key: PAYSTACK_PUBLIC_KEY,
+    email: email,
+    amount: amountKobo,
+    currency: 'NGN',
+    ref: ref,
+    metadata: {
+      custom_fields: [
+        {display_name:'Customer Name', variable_name:'customer_name', value:`${first} ${last}`},
+        {display_name:'Phone', variable_name:'phone', value:phone},
+        {display_name:'Delivery', variable_name:'delivery', value:selectedDeliveryLabel},
+        {display_name:'Items', variable_name:'items', value:cart.map(i=>`${i.name} x${i.qty}`).join(', ')},
+      ]
+    },
+    callback: function(response){
+      // Payment successful
+      btn.disabled = false;
+      spinner.style.display = 'none';
+      onPaymentSuccess(response.reference, 'Card / Bank (Paystack)', ref);
+    },
+    onClose: function(){
+      // User closed the popup
+      btn.disabled = false;
+      btnText.textContent = `Pay ₦${grandTotal().toLocaleString()} →`;
+      spinner.style.display = 'none';
+      showToast('Payment cancelled. Your cart is safe.', 'error');
+    }
+  });
+
+  handler.openIframe();
+}
+
+// Demo Paystack simulation (when SDK is not loaded / test mode)
+function simulatePaystack(ref, email, first, last, phone){
+  showToast('Opening Paystack… (Demo mode — no real charge)');
+
+  // Simulate the popup delay
+  setTimeout(()=>{
+    const proceed = confirm(
+      `PAYSTACK DEMO\n\n` +
+      `Customer: ${first} ${last}\n` +
+      `Email: ${email}\n` +
+      `Amount: ₦${grandTotal().toLocaleString()}\n` +
+      `Ref: ${ref}\n\n` +
+      `Click OK to simulate successful payment\nClick Cancel to simulate failure`
+    );
+    if(proceed){
+      onPaymentSuccess(ref, 'Card / Bank (Paystack)', ref);
+    } else {
+      onPaymentFailed();
+    }
+  }, 800);
+}
+
+// ── PAY ON DELIVERY ──
+function confirmPODOrder(){
+  const ref = 'PH-POD-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  onPaymentSuccess(ref, 'Pay on Delivery', ref);
+}
+
+// ── BANK TRANSFER ──
+function confirmTransferOrder(){
+  const ref = document.getElementById('bankRef').textContent;
+  onPaymentSuccess(ref, 'Bank Transfer', ref);
+}
+
+// ══════════════════════════════════════════
+// PAYMENT SUCCESS / FAILURE
+// ══════════════════════════════════════════
+function onPaymentSuccess(paystackRef, method, orderRef){
+  // Clear cart
+  localStorage.removeItem('preshCart');
+
+  // Populate success screen
+  const first = document.getElementById('fFirst').value;
+  const last = document.getElementById('fLast').value;
+  const street = document.getElementById('fStreet').value;
+  const city = document.getElementById('fCity').value;
+  const state = document.getElementById('fState').value;
+
+  document.getElementById('successRef').textContent = `Order ${orderRef}`;
+  document.getElementById('sPayMethod').textContent = method;
+  document.getElementById('sAmount').textContent = '₦' + grandTotal().toLocaleString();
+  document.getElementById('sAddress').textContent = `${street}, ${city}, ${state}`;
+
+  // Save order to localStorage for account page
+  const orders = JSON.parse(localStorage.getItem('preshOrders') || '[]');
+  orders.unshift({
+    id: orderRef,
+    date: new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}),
+    items: cart.map(i=>`${i.name} ×${i.qty}`).join(', '),
+    total: grandTotal(),
+    method,
+    status: 'Processing',
+    address: `${street}, ${city}, ${state}`,
+    customer: `${first} ${last}`,
+  });
+  localStorage.setItem('preshOrders', JSON.stringify(orders));
+
+  document.getElementById('successScreen').classList.add('show');
+}
+
+function onPaymentFailed(){
+  document.getElementById('failedScreen').classList.add('show');
+}
+
+function retryPayment(){
+  document.getElementById('failedScreen').classList.remove('show');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg, type=''){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.remove('show'), 3500);
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+renderSidebar();
+</script>
+</body>
+</html>
